@@ -1,0 +1,2 @@
+let A = 10 in print a;
+let b = 12 in print b;
