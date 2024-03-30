@@ -56,12 +56,15 @@ FF = ConcatNode
 def regex_tokenizer(text, G, skip_whitespaces=True):
     h = []
     GG = {x: Token(x, G[x]) for x in ['|', '*', '(', ')', 'ε']}
-
+    backs = False
     for z in text:
         if skip_whitespaces and z.isspace():
             continue
+        if not backs and z == '\\':
+            backs = True
+            continue
         try:
-            if z in ['(',')','[',']','*','|']:
+            if backs:
                 raise KeyError
             j = GG[z]
         except KeyError:
