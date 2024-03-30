@@ -1,14 +1,16 @@
 from src.lexer import Lexer
 
 nonzero_digits = '|'.join(str(n) for n in range(1, 10))
+zero = '|'.join(str(n) for n in range(0, 10))
 letters = '|'.join(chr(n) for n in range(ord('a'), ord('z') + 1))
 cap_letters = '|'.join(chr(n) for n in range(ord('A'), ord('Z') + 1))
 letters = cap_letters + '|' + letters
 print('Non-zero digits:', nonzero_digits)
+print('Zero Dig', zero)
 print('Letters:', letters)
 
 lexer = Lexer([
-    ('num', f'({nonzero_digits})(0|{nonzero_digits})*'),
+    ('num', f'({nonzero_digits})*|({nonzero_digits})*(.)({zero})*|(0)*(.)({zero})'),
     ('for', 'for'),
     ('foreach', 'foreach'),
     ('space', ' *'),
@@ -17,6 +19,8 @@ lexer = Lexer([
     ('in', 'in'),
     ('f_print', 'print'),
     ('semicolon', ';'),
+    ('open_paran', '\\('),
+    ('close_paran', '\\)'),
     ('id', f'({letters})({letters}|0|{nonzero_digits})*')
 ], 'eof')
 
@@ -39,3 +43,4 @@ for i in tokens_l:
         tokens.append(j)
 
 print(tokens)
+

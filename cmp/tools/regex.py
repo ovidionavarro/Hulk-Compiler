@@ -52,7 +52,7 @@ class ConcatNode(BinaryNode):
 
 FF = ConcatNode
 
-
+a = 3.
 def regex_tokenizer(text, G, skip_whitespaces=True):
     h = []
     GG = {x: Token(x, G[x]) for x in ['|', '*', '(', ')', 'ε']}
