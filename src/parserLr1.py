@@ -4,21 +4,7 @@ from cmp.utils import ContainerSet
 from cmp.tools.parsing import compute_firsts, compute_local_first
 from cmp.automata import State, multiline_formatter
 from pandas import DataFrame
-
-
-#definicion de la gramatica
-G = Grammar()
-E = G.NonTerminal('E', True)
-A = G.NonTerminal('A')
-equal, plus, num = G.Terminals('= + int')
-
-E %=  A + equal + A | num
-A %= num + plus + A | num
-
-#construyendo items
-item = Item(E.productions[0], 0, lookaheads=[G.EOF, plus])
-for preview in item.Preview():
-    print('item.Preview:', preview)
+from grammar_Hulk import *
 
 #clausura del conjunto de items
 def expand(item, G):
@@ -41,8 +27,6 @@ def expand(item, G):
             output.append(Item(production,0,lookaheads))
     return output
 
-#Como segundo paso, implementaremos la función `compress`. Esta recibe un conjunto de items LR(1) y devuelve 
-#el mismo conjunto pero en el que los items con mismo centro están unidos (se combinan los lookahead).
 def compress(items):
     centers = {}
 
@@ -56,13 +40,7 @@ def compress(items):
     
     return { Item(x.production, x.pos, set(lookahead)) for x, lookahead in centers.items() }
 
-compress([
-    Item(E.productions[0], 0, lookaheads=(G.EOF,)),
-    Item(E.productions[0], 0, lookaheads=(plus,)),
-    Item(E.productions[0], 1, lookaheads=(plus,)),
-    Item(E.productions[0], 2, lookaheads=(plus,)),
-    Item(E.productions[0], 2, lookaheads=(plus,G.EOF)),
-])
+
 
 #clausura del conjunto de items lr1
 def closure_lr1(items, G):
@@ -79,10 +57,9 @@ def closure_lr1(items, G):
                 new_items.add(new_item)            
 
         changed = closure.update(new_items)
+        print(changed)
         
     return compress(closure)
-
-closure = closure_lr1([item, item.NextItem().NextItem()], G)
 
 #GOTO
 def goto_lr1(items, symbol, G, just_kernel=False):
@@ -90,14 +67,12 @@ def goto_lr1(items, symbol, G, just_kernel=False):
     items = frozenset(item.NextItem() for item in items if item.NextSymbol == symbol)
     return items if just_kernel else closure_lr1(items, G)
 
-goto = goto_lr1([item], A, G)
-
 #Construyendo el autómata LR(1)
 def build_LR1_automaton(G):
     assert len(G.startSymbol.productions) == 1, 'Grammar must be augmented'
     
-    # firsts = compute_firsts(G)
-    # firsts[G.EOF] = ContainerSet(G.EOF)
+    #firsts = compute_firsts(G)
+    #firsts[G.EOF] = ContainerSet(G.EOF)
     
     start_production = G.startSymbol.productions[0]
     start_item = Item(start_production, 0, lookaheads=(G.EOF,))
@@ -131,8 +106,6 @@ def build_LR1_automaton(G):
     return automaton
 
 
-#Parser LR1-canonico
-#shift-reduce
 class ShiftReduceParser:
     SHIFT = 'SHIFT'
     REDUCE = 'REDUCE'
@@ -148,14 +121,18 @@ class ShiftReduceParser:
     def _build_parsing_table(self):
         raise NotImplementedError()
 
-    def __call__(self, w):
+    def __call__(self, w,get_operations=True):
         stack = [ 0 ]
         cursor = 0
         output = []
+        operations=[]
         
         while True:
             state = stack[-1]
-            lookahead = w[cursor]
+            if cursor < len(w):
+                lookahead = w[cursor]
+            else:
+                break
             if self.verbose: print(stack, '<---||--->', w[cursor:])
                 
             # Your code here!!! (Detect error)
@@ -164,11 +141,13 @@ class ShiftReduceParser:
             # Your code here!!! (Shift case)
             match action:
                 case self.SHIFT:
+                    operations.append((self.SHIFT))
                     stack.append(lookahead)
                     stack.append(tag)
                     cursor += 1
             # Your code here!!! (Reduce case)
                 case self.REDUCE:
+                    operations.append((self.REDUCE))
                     production = self.G.Productions[tag]
                     X, beta = production
                     for i in range(2 * len(beta)):
@@ -183,11 +162,11 @@ class ShiftReduceParser:
             # Your code here!!! (Invalid case)
                 case _:
                     raise Exception
-        
+        if(get_operations):
+            return output,operations
         return output
     
 
-#Llenar tabla de parser lr1
 class LR1Parser(ShiftReduceParser):
     def _build_parsing_table(self):
         G = self.G.AugmentedGrammar(True)
@@ -250,12 +229,12 @@ def table_to_dataframe(table):
     return DataFrame.from_dict(d, orient='index', dtype=str)
 
 #ver tabla
-#print(table_to_dataframe(parser.action))
-#print(table_to_dataframe(parser.goto))
+print(table_to_dataframe(parser.action))
+print(table_to_dataframe(parser.goto))
 
 ###TEST
-derivation = parser([num, plus, num, equal, num, plus, num, G.EOF])
-
-assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
-
+#derivation = parser([number, plus, number, equal, number, plus, number, G.EOF])
+derivation,operations = parser([let,idx,equal,num,semi])
+#assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
+print(operations)
 derivation
