@@ -241,7 +241,7 @@ print(table_to_dataframe(parser.goto))
 
 ###TEST
 # derivation = parser([number, plus, number, equal, number, plus, number, G.EOF])
-derivation, operations = parser([let, idx, equal, idx, comma, idx, cpar, arrow, num, plus, num, semi])
+derivation, operations = parser([defx, idx, opar, idx, comma, idx, cpar, arrow, num, plus, num, semi])
 # derivation, operations = parser([defx, idx, opar, idx,cpar, arrow, ])
 
 # assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
