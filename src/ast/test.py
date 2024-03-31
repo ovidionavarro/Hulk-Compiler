@@ -16,6 +16,11 @@ tokens = [
     Token('=', equal),
     Token('58', num),
     Token(';', semi),
+    Token('let', let),
+    Token('z', idx),
+    Token('=', equal),
+    Token('58', num),
+    Token(';', semi),
     Token('def', defx),
     Token('f', idx),
     Token('(', opar),
@@ -29,7 +34,7 @@ tokens = [
     Token('6', num),
     Token(';', semi),
     Token('print', printx),
-    Token('F', idx),
+    Token('f', idx),
     Token('(', opar),
     Token('5', num),
     Token('+', plus),
@@ -38,6 +43,8 @@ tokens = [
     Token('7', num),
     Token('+', plus),
     Token('y', idx),
+    Token('+', plus),
+    Token('z', idx),
     Token(')', cpar),
     Token(';', semi),
     Token('$', G.EOF),
@@ -52,3 +59,8 @@ print(ast)
 
 formatter = FormatVisitor()
 print(formatter.visit(ast))
+
+semantic_checker = SemanticCheckerVisitor()
+errors = semantic_checker.visit(ast)
+for i, error in enumerate(errors, 1):
+    print(f'{i}.', error)
