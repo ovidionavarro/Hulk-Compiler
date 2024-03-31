@@ -2,7 +2,6 @@ from src.lexer import Lexer
 from src.lexer import lexer_table
 lexer = Lexer(lexer_table,'eof')
 
-
 with open("test.hulk") as file:
     content = file.read()
     file.close()
