@@ -58,7 +58,7 @@ def closure_lr1(items, G):
                 new_items.add(new_item)
 
         changed = closure.update(new_items)
-        print(changed)
+        # print(changed)
 
     return compress(closure)
 
@@ -241,7 +241,8 @@ print(table_to_dataframe(parser.goto))
 
 ###TEST
 # derivation = parser([number, plus, number, equal, number, plus, number, G.EOF])
-derivation, operations = parser([let, idx, equal, num, semi])
+derivation, operations = parser([let, idx, equal, idx, comma, idx, cpar, arrow, num, plus, num, semi])
+# derivation, operations = parser([defx, idx, opar, idx,cpar, arrow, ])
+
 # assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
-print(operations)
-derivation
+print(derivation)

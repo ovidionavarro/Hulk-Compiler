@@ -11,7 +11,9 @@ func_call, expr_list = G.NonTerminals('<func-call> <expr-list>')
 let, defx, printx = G.Terminals('let def print')
 semi, comma, opar, cpar, arrow = G.Terminals('; , ( ) ->')
 equal, plus, minus, star, div = G.Terminals('= + - * /')
-idx, num = G.Terminals('id int')
+idx, num = G.Terminals('id num')
+new, inherits, protocol, type_, in_, range_, extends = G.Terminals("new inherits protocol type on range extends")
+
 
 program %= stat_list
 

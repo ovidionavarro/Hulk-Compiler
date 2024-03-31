@@ -17,6 +17,7 @@ lexer = Lexer([
     ('equal', '='),
     ('let', 'let'),
     ('in', 'in'),
+    ('plus', '+'),
     ('f_print', 'print'),
     ('semicolon', ';'),
     ('open_paran', '\\('),
