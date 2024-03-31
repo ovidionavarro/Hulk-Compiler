@@ -3,6 +3,8 @@ from src.ast.nodes_class import *
 
 G = Grammar()
 
+
+# Non Terminals
 program = G.NonTerminal('<program>', startSymbol=True)
 stat_list, stat = G.NonTerminals('<stat_list> <stat>')
 let_var, def_func, print_stat, arg_list = G.NonTerminals('<let-var> <def-func> <print-stat> <arg-list>')
