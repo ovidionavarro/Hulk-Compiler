@@ -15,6 +15,7 @@ for i in text_list:
     tokens_l.append(lexer(i))
 
 for i in tokens_l:
-    print(i)
     for j in i:
         tokens.append(j)
+
+print(tokens)
