@@ -4,7 +4,7 @@ from cmp.utils import ContainerSet
 from cmp.tools.parsing import compute_firsts, compute_local_first
 from cmp.automata import State, multiline_formatter
 from pandas import DataFrame
-from src.grammar import *
+from src.grammar.aux_grammar import *
 
 
 # clausura del conjunto de items
