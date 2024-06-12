@@ -4,28 +4,56 @@ from cmp.utils import ContainerSet
 from cmp.tools.parsing import compute_firsts, compute_local_first
 from cmp.automata import State, multiline_formatter
 from pandas import DataFrame
-from grammar_Hulk import *
+from jagrammar import *
+
+#def compute_local_first(firsts, alpha):
+#    """
+#    Computes the local firsts for a given alpha
+#
+#    :param firsts:
+#    :param alpha:
+#    :return: ContainerSet
+#    """
+#    first_alpha = ContainerSet()
+#
+#    try:
+#        alpha_is_epsilon = alpha.IsEpsilon
+#    except:
+#        alpha_is_epsilon = False
+#
+#    if alpha_is_epsilon:
+#        first_alpha.set_epsilon()
+#
+#    else:
+#        for symbol in alpha:
+#            first_alpha.update(firsts[symbol])
+#            if not firsts[symbol].contains_epsilon:
+#                break
+#        else:
+#            first_alpha.set_epsilon()
+#
+#    return first_alpha
 
 #clausura del conjunto de items
-def expand(item, G):
+def expand(item, firsts):
     next_symbol = item.NextSymbol
     if next_symbol is None or not next_symbol.IsNonTerminal:
         return []
     
     lookaheads = ContainerSet()
-    firsts = compute_firsts(G)
-    firsts[G.EOF] = ContainerSet(G.EOF)
     # Your code here!!! (Compute lookahead for child items)
     for preview in item.Preview():
-        lookaheads.update(compute_local_first(firsts,preview))        
+        lookaheads.hard_update(compute_local_first(firsts,preview))        
     
     assert not lookaheads.contains_epsilon
     # Your code here!!! (Build and return child items)
-    output = []
-    for production in G.Productions:
-        if production.Left == next_symbol:
-            output.append(Item(production,0,lookaheads))
-    return output
+    #output = []
+    # for production in G.Productions:
+    #     if production.Left == next_symbol:
+    #         output.append(Item(production,0,lookaheads))
+    # return output
+    return [Item(prod, 0, lookaheads) for prod in next_symbol.productions]
+
 
 def compress(items):
     centers = {}
@@ -43,42 +71,40 @@ def compress(items):
 
 
 #clausura del conjunto de items lr1
-def closure_lr1(items, G):
+def closure_lr1(items, firsts):
     closure = ContainerSet(*items)
     
     changed = True
     while changed:
         changed = False
-        
         new_items = ContainerSet()
         # Your code here!!!
         for item in closure:
-            for new_item in expand(item,G):
-                new_items.add(new_item)            
-
+            new_items.extend(expand(item, firsts))
         changed = closure.update(new_items)
-        print(changed)
         
     return compress(closure)
 
 #GOTO
-def goto_lr1(items, symbol, G, just_kernel=False):
-    #assert just_kernel or firsts is not None, '`firsts` must be provided if `just_kernel=False`'
+def goto_lr1(items, symbol,firsts=None, just_kernel=False):
+    assert (
+        just_kernel or firsts is not None
+        ), '`firsts` must be provided if `just_kernel=False`'
     items = frozenset(item.NextItem() for item in items if item.NextSymbol == symbol)
-    return items if just_kernel else closure_lr1(items, G)
+    return items if just_kernel else closure_lr1(items,firsts)
 
 #Construyendo el autómata LR(1)
 def build_LR1_automaton(G):
     assert len(G.startSymbol.productions) == 1, 'Grammar must be augmented'
     
-    #firsts = compute_firsts(G)
-    #firsts[G.EOF] = ContainerSet(G.EOF)
+    firsts = compute_firsts(G)
+    firsts[G.EOF] = ContainerSet(G.EOF)
     
     start_production = G.startSymbol.productions[0]
     start_item = Item(start_production, 0, lookaheads=(G.EOF,))
     start = frozenset([start_item])
     
-    closure = closure_lr1(start, G)
+    closure = closure_lr1(start, firsts)
     automaton = State(frozenset(closure), True)
     
     pending = [ start ]
@@ -90,16 +116,25 @@ def build_LR1_automaton(G):
         
         for symbol in G.terminals + G.nonTerminals:
             # Your code here!!! (Get/Build `next_state`)
-            next_items = frozenset(goto_lr1(current_state.state,symbol,G))
-            if not next_items:
+            #next_items = frozenset(goto_lr1(current_state.state,symbol,G))
+            #if not next_items:
+            #    continue
+            #try:
+            #    next_state = visited[next_items]
+            #except KeyError:
+            #    visited[next_items] = State(next_items,True)
+            #    pending.append(next_items)
+            #    next_state = visited[next_items]
+            items = current_state.state
+            kernel = goto_lr1(items, symbol, just_kernel=True)
+            if not kernel:
                 continue
             try:
-                next_state = visited[next_items]
+                next_state = visited[kernel]
             except KeyError:
-                visited[next_items] = State(next_items,True)
-                pending.append(next_items)
-                next_state = visited[next_items]
-            
+                closure = goto_lr1(items, symbol, firsts)
+                next_state = visited[kernel] = State(frozenset(closure), True)
+                pending.append(kernel)
             current_state.add_transition(symbol.Name, next_state)
     
     automaton.set_formatter(multiline_formatter)
@@ -118,8 +153,8 @@ class ShiftReduceParser:
         self.goto = {}
         self._build_parsing_table()
     
-    def _build_parsing_table(self):
-        raise NotImplementedError()
+    #def _build_parsing_table(self):
+    #    raise NotImplementedError()
 
     def __call__(self, w,get_operations=True):
         stack = [ 0 ]
@@ -200,7 +235,6 @@ class LR1Parser(ShiftReduceParser):
         assert key not in table or table[key] == value, 'Shift-Reduce or Reduce-Reduce conflict!!!'
         table[key] = value
 
-parser = LR1Parser(G, verbose=True)
 
 #Utilizando pandas generar tabla
 def encode_value(value):
@@ -229,12 +263,13 @@ def table_to_dataframe(table):
     return DataFrame.from_dict(d, orient='index', dtype=str)
 
 #ver tabla
-print(table_to_dataframe(parser.action))
-print(table_to_dataframe(parser.goto))
+#print(table_to_dataframe(parser.action))
+#print(table_to_dataframe(parser.goto))
 
 ###TEST
-#derivation = parser([number, plus, number, equal, number, plus, number, G.EOF])
-derivation,operations = parser([let,idx,equal,num,semi])
+parser = LR1Parser(G, verbose=True)
+derivation,operations = parser([number,plus,number,pow,number,semicolon,G.EOF],get_operations=True)
 #assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
-print(operations)
-derivation
+#derivation,operations = parser([num,minus,num])
+#print(operations)
+#derivation
