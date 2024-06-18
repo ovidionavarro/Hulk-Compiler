@@ -1,6 +1,6 @@
-from cmp.automata import State
-from cmp.tools.regex import Regex
-from cmp.utils import Token
+from src.cmp.automata import State
+from src.cmp.tools.regex import Regex
+from src.cmp.utils import Token
 
 class Lexer:
     def __init__(self, table, eof):

@@ -1,8 +1,7 @@
-from cmp.pycompiler import Grammar
-from cmp.pycompiler import Item
-from cmp.utils import ContainerSet
-from cmp.tools.parsing import compute_firsts, compute_local_first
-from cmp.automata import State, multiline_formatter
+from src.cmp.pycompiler import Item
+from src.cmp.utils import ContainerSet
+from src.cmp.tools.parsing import compute_firsts, compute_local_first
+from src.cmp.automata import State, multiline_formatter
 from pandas import DataFrame
 from jagrammar import *
 

@@ -61,6 +61,7 @@ class DFA(NFA):
     def __init__(self,states,finals,transitions,start=0):
         assert L(y(value,e)for value in transitions.values())
         assert L(g(b)>0 for A,b in transitions)
+        
         transitions={key:[value]for key,value in transitions.items()}
         NFA.__init__(self,states,finals,transitions,start)
         self.current=start
