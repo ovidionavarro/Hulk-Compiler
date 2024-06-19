@@ -81,7 +81,31 @@ def automata_closure(a1):
 
     return NFA(states, finals, transitions, start)
 
+def automata_plus_clausure(a1):
+    return automata_concatenation(a1,automata_closure(a1))
+def automata_epsilon():
+    return NFA(states=2, finals=[1], transitions={(0, ''): [1]})
 
+def automata_possible(a1):
+    eps=automata_epsilon()
+    return automata_union(eps,a1)
+
+def automata_not(a1):
+    new_finals=set()
+    for i in range(a1.states):
+        if i not in a1.finals:
+            new_finals.add(i)
+
+    a1.finals=new_finals
+    return a1
+
+def automata_symbol(lex):
+    aut_sym = NFA(states=2,finals=[1],transitions={(0,lex):[1]})
+    return aut_sym
+def automata_complement(a1):
+    complement = copy(a1)
+    complement.finals = [i for i in range(a1.states) if i not in a1.finals]
+    return complement
 def distinguish_states(group, automaton, partition):
     split = {}
     vocabulary = tuple(automaton.vocabulary)
@@ -101,8 +125,6 @@ def distinguish_states(group, automaton, partition):
             split[destinations] = [state]
 
     return [group for group in split.values()]
-
-
 def state_minimization(automaton):
     partition = DisjointSet(*range(automaton.states))
 
@@ -130,8 +152,6 @@ def state_minimization(automaton):
         partition = new_partition
 
     return partition
-
-
 def automata_minimization(automaton):
     partition = state_minimization(automaton)
 
@@ -168,12 +188,6 @@ def automata_minimization(automaton):
                 # start = [states.index(group[0].value) for group in partition.groups if automaton.start in group][0]
 
     return DFA(len(states), finals, transitions, start)
-
-def automata_complement(a1):
-    complement = copy(a1)
-    complement.finals = [i for i in range(a1.states) if i not in a1.finals]
-    return complement
-
 
 # automaton = DFA(states=5, finals=[4], transitions={
 #     (0,'a'): 1,

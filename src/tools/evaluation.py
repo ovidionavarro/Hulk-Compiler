@@ -1,4 +1,4 @@
-from cmp.pycompiler import EOF
+from src.cmp.pycompiler import EOF
 G=iter
 b=next
 n=isinstance
