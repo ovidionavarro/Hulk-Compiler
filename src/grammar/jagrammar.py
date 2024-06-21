@@ -1,7 +1,7 @@
 
 import math
 
-from cmp.pycompiler import Grammar
+from src.cmp.pycompiler import Grammar
 
 
 G = Grammar()#
@@ -241,8 +241,8 @@ def GetKeywords():
             new, inherits, protocol, type_, in_, range_, true, false, extends, as_,
             rand, sin, cos, sqrt, exp, log, is_, tan, base]
 
-from parserLr1 import LR1Parser
-parse=LR1Parser(G,verbose=True)
-
-derivarion=parse([let,identifier,equal,number,in_,print_,lparen,minus,identifier,rparen,semicolon,G.EOF])
+# from parserLr1 import LR1Parser
+# parse=LR1Parser(G,verbose=True)
+#
+# derivarion=parse([let,identifier,equal,number,in_,print_,lparen,minus,identifier,rparen,semicolon,G.EOF])
 

@@ -1,90 +1,54 @@
-from cmp.pycompiler import Grammar
+from src.cmp.pycompiler import Grammar
 
 G = Grammar()
 
 program = G.NonTerminal('<program>', startSymbol=True)
 stat_list, stat = G.NonTerminals('<stat_list> <stat>')
-decl_let, decl_func, print_stat, arg_list,expr,simple_expr = G.NonTerminals('<let-var> <def-func> <print-stat> <arg-list> <expr> <simple-expr>')
-neg_term,pw_ ,expr_arith, term, factor, atom ,expr_object= G.NonTerminals('<pw> <expr_arith> <term> <factor> <atom> <expr_object>')
-func_call, expr_list = G.NonTerminals('<func-call> <expr_arith-list>')
+let_var, def_func, print_stat, arg_list = G.NonTerminals('<let-var> <def-func> <print-stat> <arg-list>')
+expr, term, factor, atom = G.NonTerminals('<expr> <term> <factor> <atom>')
+func_call, expr_list = G.NonTerminals('<func-call> <expr-list>')
 
-destruct, concat = G.Terminals(":= @")
-sqrt,sin,cos,exp,log,rand=G.Terminals('sqrt sin cos exp log rand')
 let, defx, printx = G.Terminals('let def print')
-semi, comma, opar, cpar,point, arrow = G.Terminals('; , ( ) . ->')
-equal, plus, minus, star, div,pow = G.Terminals('= + - * / ^')
-idx, num ,string= G.Terminals('id int string')
-true,false = G.Terminals('true false')
-pi,e = G.Terminals('pi e')
+semi, comma, opar, cpar, arrow = G.Terminals('; , ( ) ->')
+equal, plus, minus, star, div = G.Terminals('= + - * /')
+idx, num = G.Terminals('id int')
 
-program %= stat_list
+program %= stat_list#, lambda h,s: ProgramNode(s[1])
 
-stat_list %= stat + semi
-stat_list %= stat + semi + stat_list
+stat_list %= stat + semi#, lambda h,s: [s[1]] # Your code here!!! (add rule)
+stat_list %= stat + semi + stat_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
 
-stat %= decl_let
-stat %= decl_func
-stat %= print_stat
-stat%= expr_arith
+stat %= let_var#, lambda h,s: s[1] # Your code here!!! (add rule)
+stat %= def_func#, lambda h,s: s[1] # Your code here!!! (add rule)
+stat %= print_stat#, lambda h,s: s[1] # Your code here!!! (add rule)
 
-decl_let %= let + idx + equal + expr_arith
-decl_func %= defx + idx + opar + arg_list + cpar + arrow + expr_arith
-print_stat %= printx + expr_arith
+let_var %= let + idx + equal + expr#, lambda h,s: VarDeclarationNode(s[2], s[4]) # Your code here!!! (add rule)
 
-arg_list %=idx
-arg_list %= idx + comma + arg_list
+def_func %= defx + idx + opar + arg_list + cpar + arrow + expr#, lambda h,s: FuncDeclarationNode(s[2], s[4], s[7]) # Your code here!!! (add rule)
 
-expr_arith %= expr_arith + plus + term
-expr_arith %= expr_arith + minus + term
-expr_arith %= term
+print_stat %= printx + expr#, lambda h,s: PrintNode(s[2]) # Your code here!!! (add rule)
 
-term %= term + star + neg_term
-term %= term + div + neg_term
-term %= neg_term
+arg_list %= idx#, lambda h,s: [s[1]] # Your code here!!! (add rule)
+arg_list %= idx + comma + arg_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
 
-neg_term %= minus+neg_term
-neg_term %= pw_
+expr %= expr + plus + term#, lambda h,s: PlusNode(s[1],s[3]) # Your code here!!! (add rule)
+expr %= expr + minus + term#, lambda h,s: MinusNode(s[1],s[3]) # Your code here!!! (add rule)
+expr %= term#, lambda h,s: s[1] # Your code here!!! (add rule)
 
-pw_%=pw_+pow+expr_object
-pw_%=expr_object
+term %= term + star + factor#, lambda h,s: StarNode(s[1],s[3]) # Your code here!!! (add rule)
+term %= term + div + factor#, lambda h,s: DivNode(s[1],s[3]) # Your code here!!! (add rule)
+term %= factor#, lambda h,s: s[1] # Your code here!!! (add rule)
 
-expr_object%=idx
-expr_object%=func_call
+factor %= atom#, lambda h,s: s[1] # Your code here!!! (add rule)
+factor %= opar + expr + cpar#, lambda h,s: s[2] # Your code here!!! (add rule)
 
-func_call%=exp+opar+expr+cpar
-func_call%=log+opar+expr+cpar
-func_call%=sin+opar+expr+cpar
-func_call%=cos+opar+expr+cpar
-func_call%=sqrt+opar+expr+cpar
-func_call%=rand+opar+cpar
-func_call%=true
-func_call%=false
-func_call%=string 
-func_call%=num
-func_call%=idx
-func_call%=pi 
-func_call%=e
+atom %= num#, lambda h,s: ConstantNumNode(s[1]) # Your code here!!! (add rule)
+atom %= idx#, lambda h,s: VariableNode(s[1]) # Your code here!!! (add rule)
+atom %= func_call#, lambda h,s: s[1] # Your code here!!! (add rule)
 
+func_call %= idx + opar + expr_list + cpar#, lambda h,s: CallNode(s[1], s[3]) # Your code here!!! (add rule)
 
-
-
-#pw_%=factor + pow+ factor
-#pw_%=factor
-#
-#factor %= atom
-#factor %= opar + expr_arith + cpar
-#
-#atom %= num
-#atom %= idx
-#atom %= func_call
-
-
-
-#func_call %= idx + opar + expr_list + cpar
-#
-#
-#
-#expr_list %= expr_arith
-#expr_list %= expr_arith + comma + expr_list
+expr_list %= expr#, lambda h,s: [s[1]] # Your code here!!! (add rule)
+expr_list %= expr + comma + expr_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
 
 print(G)
