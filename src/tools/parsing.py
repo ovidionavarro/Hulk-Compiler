@@ -1,5 +1,5 @@
 from itertools import islice
-from cmp.utils import ContainerSet
+from src.cmp.utils import ContainerSet
 def compute_local_first(firsts,alpha):
     f=firsts
     p=alpha
@@ -178,9 +178,9 @@ class ShiftReduceParser:
 
 
 
-from cmp.utils import ContainerSet
-from cmp.tools.parsing import compute_firsts,compute_local_first
-from cmp.pycompiler import Item
+from src.cmp.utils import ContainerSet
+from src.tools.parsing import compute_firsts,compute_local_first
+from src.cmp.pycompiler import Item
 def expand(d,n):
     y=d.NextSymbol
     if y is None or not y.IsNonTerminal:
@@ -216,7 +216,7 @@ def goto_lr1(A,P,firsts=None,just_kernel=False):
     A=frozenset(d.NextItem()for d in A if d.NextSymbol==P)
     return A if just_kernel else closure_lr1(A,firsts)
 
-from cmp.automata import State,multiline_formatter
+from src.cmp.automata import State,multiline_formatter
 def build_LR1_automaton(G):
     assert len(G.startSymbol.productions)==1,'Grammar must be augmented'
     n=compute_firsts(G)
@@ -245,7 +245,7 @@ def build_LR1_automaton(G):
             U.add_transition(P.Name,w)
     r.set_formatter(multiline_formatter)
     return r
-from cmp.tools.parsing import ShiftReduceParser
+from src.tools.parsing import ShiftReduceParser
 class LR1Parser(ShiftReduceParser):
     def _build_parsing_table(W):
         G=W.G.AugmentedGrammar(True)
