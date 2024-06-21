@@ -64,40 +64,25 @@ def automata_closure(a1):
 
     for (origin, symbol), destinations in a1.map.items():
         ## Relocate automaton transitions ...
-        # Your code here
-        transitions[d1 + origin, symbol] = [d1 + d for d in destinations]
+        transitions[d1 + origin, symbol] = {d1 + d for d in destinations}
 
-        ## Add transitions from start state ...
-    # Your code here
-    transitions[start, ''] = [d1]
-
+    transitions[start, ''] = [a1.start + d1,final]
     ## Add transitions to final state and to start state ...
-    # Your code here
-    transitions[final - 1, ''] = [final]
-    transitions[final, ''] = [start]
-
-    states = a1.states + 2
-    finals = {start, final}
-
+    for z in a1.finals:
+        try:
+            x=transitions[z+d1,'']
+        except :
+            x=transitions[z+d1,'']=set()
+        x.add(final)
+        x.add(a1.start+d1)
+        states=a1.states+2
+        finals={final}
     return NFA(states, finals, transitions, start)
 
-def automata_plus_clausure(a1):
-    return automata_concatenation(a1,automata_closure(a1))
 def automata_epsilon():
     return NFA(states=2, finals=[1], transitions={(0, ''): [1]})
 
-def automata_possible(a1):
-    eps=automata_epsilon()
-    return automata_union(eps,a1)
 
-def automata_not(a1):
-    new_finals=set()
-    for i in range(a1.states):
-        if i not in a1.finals:
-            new_finals.add(i)
-
-    a1.finals=new_finals
-    return a1
 
 def automata_symbol(lex):
     aut_sym = NFA(states=2,finals=[1],transitions={(0,lex):[1]})
@@ -111,18 +96,16 @@ def distinguish_states(group, automaton, partition):
     vocabulary = tuple(automaton.vocabulary)
 
     for member in group:
-        state = member.value
 
-        # Your code here
-        destinations = []
-        for char in vocabulary:
-            destinations.append(partition[automaton.transitions[state][char][0]].representative)
-        destinations = tuple(destinations)
-
+        transitions = automaton.transitions[member.value]
+        labels = ((transitions[symbol][0] if symbol in transitions else None) for symbol in vocabulary)
+        key = tuple((partition[node].representative if node in partition.nodes else None) for node in labels)
         try:
-            split[destinations].append(state)
+            split[key].append(member.value)
         except KeyError:
-            split[destinations] = [state]
+            split[key] = [member.value]
+        # Your code here
+
 
     return [group for group in split.values()]
 def state_minimization(automaton):

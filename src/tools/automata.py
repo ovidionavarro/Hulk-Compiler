@@ -19,7 +19,7 @@ try:
  import pydot
 except ImportError:
  pass
-from cmp.utils import ContainerSet
+from src.cmp.utils import ContainerSet
 class NFA:
     def __init__(self,states,finals,transitions,start=0):
         self.states=states
@@ -55,8 +55,6 @@ class NFA:
          return self.graph().create_svg().decode('utf8')
         except:
          pass
-
-
 class DFA(NFA):
     def __init__(self,states,finals,transitions,start=0):
         assert L(y(value,e)for value in transitions.values())
@@ -194,7 +192,7 @@ def automata_closure(a1):
     S={u}
     return NFA(J,S,c,l)
 
-from cmp.utils import DisjointSet
+from src.cmp.utils import DisjointSet
 
 def distinguish_states(R,automaton,K):
     U={}
