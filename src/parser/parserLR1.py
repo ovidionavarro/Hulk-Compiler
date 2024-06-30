@@ -231,22 +231,22 @@ def table_to_dataframe(table):
 # print(table_to_dataframe(parser.goto))
 
 ###TEST
-from src.cmp.utils import Token
-parser = LR1Parser(G, verbose=True)
-tokens= [
-    Token('let',let ),
-Token('a', identifier),
-Token('=', equal),
-Token('55', number),
-Token('==', dequal),
-Token('55', number),
-Token('+', plus),
-Token('55', number),
-
-Token('|', or_),
-Token('55', number),
-Token('!=',notequal ),
-Token('55', number),
+# from src.cmp.utils import Token
+# parser = LR1Parser(G, verbose=True)
+# tokens= [
+#     Token('let',let ),
+# Token('a', identifier),
+# Token('=', equal),
+# Token('55', number),
+# Token('==', dequal),
+# Token('55', number),
+# Token('+', plus),
+# Token('55', number),
+#
+# Token('|', or_),
+# Token('55', number),
+# Token('!=',notequal ),
+# Token('55', number),
 
 
 
@@ -256,20 +256,20 @@ Token('55', number),
 # Token('55', number),
 # Token('*', times),
 # Token('a',identifier),
-Token('in', in_),
-Token('print',print_),
-Token('(', lparen),
-Token('a', identifier),
+# Token('in', in_),
+# Token('print',print_),
+# Token('(', lparen),
+# Token('a', identifier),
 
 # Token('5',number),
 # Token('^',power),
 # Token('5',number),
 # Token('as',as_),
 # Token('b',identifier),
-Token(')', rparen),
-Token(';',semicolon),
-Token('$', G.EOF),
-]
+# Token(')', rparen),
+# Token(';',semicolon),
+# Token('$', G.EOF),
+# ]
 # tokens=[
 #     Token('let', let),
 #     Token('x', idx),
@@ -303,7 +303,7 @@ Token('$', G.EOF),
 #     Token('$', G.EOF),
 # ]
 
-parse, operations = parser([t.token_type for t in tokens],get_operations=True)
+# parse, operations = parser([t.token_type for t in tokens],get_operations=True)
 
 # assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
 # derivation,operations = parser([number,minus,number])
