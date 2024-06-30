@@ -3,7 +3,7 @@ from src.cmp.utils import ContainerSet
 from src.parser.utils_parse import compute_firsts, compute_local_first
 from src.cmp.automata import State, multiline_formatter
 from pandas import DataFrame
-from src.grammar.grammar_Hulk import *
+from src.grammar.jagrammar import *
 
 def expand(item, firsts):
     next_symbol = item.NextSymbol
@@ -233,38 +233,76 @@ def table_to_dataframe(table):
 ###TEST
 from src.cmp.utils import Token
 parser = LR1Parser(G, verbose=True)
-tokens=[
-    Token('let', let),
-    Token('x', idx),
-    Token('=', equal),
-    Token('58', num),
-    Token(';', semi),
-    Token('def', defx),
-    Token('f', idx),
-    Token('(', opar),
-    Token('a', idx),
-    Token(',', comma),
-    Token('b', idx),
-    Token(')', cpar),
-    Token('->', arrow),
-    Token('5', num),
-    Token('+', plus),
-    Token('6', num),
-    Token(';', semi),
-    Token('print', printx),
-    Token('f', idx),
-    Token('(', opar),
-    Token('5', num),
-    Token('+', plus),
-    Token('x', idx),
-    Token(',', comma),
-    Token('7', num),
-    Token('+', plus),
-    Token('y', idx),
-    Token(')', cpar),
-    Token(';', semi),
-    Token('$', G.EOF),
+tokens= [
+    Token('let',let ),
+Token('a', identifier),
+Token('=', equal),
+Token('55', number),
+Token('==', dequal),
+Token('55', number),
+Token('+', plus),
+Token('55', number),
+
+Token('|', or_),
+Token('55', number),
+Token('!=',notequal ),
+Token('55', number),
+
+
+
+# Token(',', comma),
+# Token('b', identifier),
+# Token('=', equal),
+# Token('55', number),
+# Token('*', times),
+# Token('a',identifier),
+Token('in', in_),
+Token('print',print_),
+Token('(', lparen),
+Token('a', identifier),
+
+# Token('5',number),
+# Token('^',power),
+# Token('5',number),
+# Token('as',as_),
+# Token('b',identifier),
+Token(')', rparen),
+Token(';',semicolon),
+Token('$', G.EOF),
 ]
+# tokens=[
+#     Token('let', let),
+#     Token('x', idx),
+#     Token('=', equal),
+#     Token('58', num),
+#     Token(';', semi),
+#     Token('def', defx),
+#     Token('f', idx),
+#     Token('(', opar),
+#     Token('a', idx),
+#     Token(',', comma),
+#     Token('b', idx),
+#     Token(')', cpar),
+#     Token('->', arrow),
+#     Token('5', num),
+#     Token('+', plus),
+#     Token('6', num),
+#     Token(';', semi),
+#     Token('print', printx),
+#     Token('f', idx),
+#     Token('(', opar),
+#     Token('5', num),
+#     Token('+', plus),
+#     Token('x', idx),
+#     Token(',', comma),
+#     Token('7', num),
+#     Token('+', plus),
+#     Token('y', idx),
+#     Token(')', cpar),
+#     Token(';', semi),
+#     Token('$', G.EOF),
+# ]
+
 parse, operations = parser([t.token_type for t in tokens],get_operations=True)
 
 # assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'

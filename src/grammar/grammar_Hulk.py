@@ -2,53 +2,68 @@ from src.cmp.pycompiler import Grammar
 
 G = Grammar()
 
-program = G.NonTerminal('<program>', startSymbol=True)
-stat_list, stat = G.NonTerminals('<stat_list> <stat>')
-let_var, def_func, print_stat, arg_list = G.NonTerminals('<let-var> <def-func> <print-stat> <arg-list>')
-expr, term, factor, atom = G.NonTerminals('<expr> <term> <factor> <atom>')
-func_call, expr_list = G.NonTerminals('<func-call> <expr-list>')
 
-let, defx, printx = G.Terminals('let def print')
-semi, comma, opar, cpar, arrow = G.Terminals('; , ( ) ->')
-equal, plus, minus, star, div = G.Terminals('= + - * /')
-idx, num = G.Terminals('id int')
 
-program %= stat_list#, lambda h,s: ProgramNode(s[1])
 
-stat_list %= stat + semi#, lambda h,s: [s[1]] # Your code here!!! (add rule)
-stat_list %= stat + semi + stat_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
+#terminals
+string, identifier, number = G.Terminals('string identifier number')
+equal,doble_equal,less,great,less_equal,great_equal,not_equal = G.Terminals('= == < > <= >= !=')
+plus,minus,mult,div,int_div = G.Terminals('+ - * / //')
+destruct,concat= G.Terminals(':= @')
+oparent, cparent, obrack, cbrack, okey, ckey = G.Terminals('( ) [ ] { }')
+comma,point,doble_point,semicolon = G.Terminals(', . : ;')
+arrow,darrow=G.Terminals('-> =>')
+and_,or_,not_=G.Terminals('& | !')
+for_,while_=G.Terminals('for while')
+if_,else_,elif_=G.Terminals('if else elif')
+function_,print_,let_=G.Terminals('function print let')
+sin,cos,sqrt,exp,log,tan,base=G.Terminals('sin cos sqrt exp log tan base')
+pi,e=G.Terminals('pi e')
+as_,is_,random_=G.Terminals('as is rand')
+true,false=G.Terminals('true false')   
+new,inherit,protocol,type_,in_,range_,extend=G.Terminals('new inherit protocol type in range extend')   
 
-stat %= let_var#, lambda h,s: s[1] # Your code here!!! (add rule)
-stat %= def_func#, lambda h,s: s[1] # Your code here!!! (add rule)
-stat %= print_stat#, lambda h,s: s[1] # Your code here!!! (add rule)
 
-let_var %= let + idx + equal + expr#, lambda h,s: VarDeclarationNode(s[2], s[4]) # Your code here!!! (add rule)
 
-def_func %= defx + idx + opar + arg_list + cpar + arrow + expr#, lambda h,s: FuncDeclarationNode(s[2], s[4], s[7]) # Your code here!!! (add rule)
+# no Terminals
+init = G.NonTerminal("<init>", startSymbol=True)
+program ,expression, statement, simple_program = G.NonTerminals("<program> <expression> <statement> <simple_program")
+dec_func, dec_type, dec_protocol = G.NonTerminals("<dec_func> <dec_type> <dec_protocol>")
+parameters, doubt, variable=G.NonTerminals("<parameters> <doubt> <variable>")
+expression_block,simple_expression=G.NonTerminals("<expression_block> <simple_expression>")
+boolean,concatenation=G.NonTerminals("<boolean> <concatenation>")
 
-print_stat %= printx + expr#, lambda h,s: PrintNode(s[2]) # Your code here!!! (add rule)
 
-arg_list %= idx#, lambda h,s: [s[1]] # Your code here!!! (add rule)
-arg_list %= idx + comma + arg_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
+init%=program
 
-expr %= expr + plus + term#, lambda h,s: PlusNode(s[1],s[3]) # Your code here!!! (add rule)
-expr %= expr + minus + term#, lambda h,s: MinusNode(s[1],s[3]) # Your code here!!! (add rule)
-expr %= term#, lambda h,s: s[1] # Your code here!!! (add rule)
+program %= simple_program + program
+program %= statement + program
 
-term %= term + star + factor#, lambda h,s: StarNode(s[1],s[3]) # Your code here!!! (add rule)
-term %= term + div + factor#, lambda h,s: DivNode(s[1],s[3]) # Your code here!!! (add rule)
-term %= factor#, lambda h,s: s[1] # Your code here!!! (add rule)
+statement %= dec_func
+statement %= dec_type
+statement %= dec_protocol
 
-factor %= atom#, lambda h,s: s[1] # Your code here!!! (add rule)
-factor %= opar + expr + cpar#, lambda h,s: s[2] # Your code here!!! (add rule)
+dec_func %= function_ + identifier + oparent + parameters + cparent+ darrow + simple_expression+semicolon
+dec_func %= function_ + identifier + oparent + parameters + cparent+ doble_point+identifier+darrow + simple_expression+semicolon
+dec_func %=function_ + identifier + oparent + parameters+ cparent + expression_block + doubt
+dec_func %=function_ + identifier + oparent + parameters+ cparent + okey + doble_point + ckey +identifier+ expression_block + doubt
 
-atom %= num#, lambda h,s: ConstantNumNode(s[1]) # Your code here!!! (add rule)
-atom %= idx#, lambda h,s: VariableNode(s[1]) # Your code here!!! (add rule)
-atom %= func_call#, lambda h,s: s[1] # Your code here!!! (add rule)
+doubt%= semicolon
+doubt%= G.Epsilon
 
-func_call %= idx + opar + expr_list + cpar#, lambda h,s: CallNode(s[1], s[3]) # Your code here!!! (add rule)
+parameters %= variable
+parameters %= variable + comma + parameters
 
-expr_list %= expr#, lambda h,s: [s[1]] # Your code here!!! (add rule)
-expr_list %= expr + comma + expr_list#, lambda h,s: [s[1]] + s[3] # Your code here!!! (add rule)
+variable%=identifier
+variable %= identifier + doble_point + identifier
 
-print(G)
+
+
+boolean%=concatenation
+boolean%=boolean + or_ + concatenation
+boolean%=boolean + and_ + concatenation
+boolean%=boolean +  + concatenation
+boolean%=boolean + and_ + concatenation
+boolean%=boolean + and_ + concatenation
+boolean%=boolean + and_ + concatenation
+

@@ -51,9 +51,10 @@ class Regex:
     def __call__(self, text):
         return self.automaton.recognize(text)
 
-
-# m=Regex('"(a|b|\\|)*"',False)
-# print(m('"||a|"'))
+# from src.lexer.symbol_table import nonzero_digits
+#
+# m=Regex(f'(0|({nonzero_digits})(0|{nonzero_digits})*)|((0|({nonzero_digits})(0|{nonzero_digits})*).(0|{nonzero_digits})*)',False)
+# print(m('40.033'))
 ##test
 # tokens = regex_tokenizer('\\(* | ε',G)
 # print(tokens)

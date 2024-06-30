@@ -4,7 +4,7 @@ import math
 from src.cmp.pycompiler import Grammar
 
 
-G = Grammar()#
+G = Grammar()
 
 
 # No Terminals
@@ -36,7 +36,7 @@ not_sc_expression, else_block_not_sc, simple_program = G.NonTerminals("<not_sc_e
 
 # Terminals
 string, identifier, number = G.Terminals("<string> <id> <number>")
-plus, minus, times, divide, int_divide = G.Terminals("+ - * / //")
+plus, minus, star, divide, int_divide = G.Terminals("+ - * / //")
 equal, dequal, lesst, greatt, lequal, gequal, notequal = G.Terminals("= == < > <= >= !=")
 lparen, rparen, lbrack, rbrack, lbrace, rbrace = G.Terminals("( ) [ ] { }")
 comma, period, colon, semicolon = G.Terminals(", . : ;")
@@ -188,7 +188,7 @@ module %= product#, lambda h, s: s[1]
 module %= module + modulus + product#, lambda h, s: ArithmeticExpression('%', s[1], s[3])
 #
 product %= monomial#, lambda h, s: s[1]
-product %= product + times + monomial#, lambda h, s: ArithmeticExpression('*', s[1], s[3])
+product %= product + star + monomial#, lambda h, s: ArithmeticExpression('*', s[1], s[3])
 product %= product + divide + monomial#, lambda h, s: ArithmeticExpression('/', s[1], s[3])
 product %= product + int_divide + monomial#, lambda h, s: ArithmeticExpression('//', s[1], s[3])
 #
