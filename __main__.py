@@ -1,6 +1,10 @@
 import sys
+import os
 from src.lexer.lexer import Lexer
 from src.lexer.symbol_table import  symbol_table
+
+
+
 
 lexer=Lexer(symbol_table,'eof')
 def read_file_as_string(filename):
@@ -18,7 +22,9 @@ if __name__ == "__main__":
     # Obtiene el nombre del archivo del primer argumento
     filename = sys.argv[1]
     try:
-        text = read_file_as_string(filename)
+    #obtener ruta completa
+        file_path = os.path.join("test", filename)
+        text = read_file_as_string(file_path)
         text = text.replace('\n', '')
         print(f'\n>>> Tokenizando: "{text}"')
         tokens = lexer(text)
