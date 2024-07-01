@@ -58,8 +58,9 @@ as_, is_ = G.Terminals("as is")
 
 init_ %= program#, lambda h, s: s[1]
 
-program %= simple_program#, lambda h, s: ProgramNode([], s[1])
-program %= statement + program#, lambda h, s: ProgramNode([s[1]] + s[2].STATEMENTS, s[2].EXPRESSION)
+program%=simple_program
+program %= simple_program+program#, lambda h, s: ProgramNode([], s[1])
+# program %= statement + program#, lambda h, s: ProgramNode([s[1]] + s[2].STATEMENTS, s[2].EXPRESSION)
 
 statement %= function + identifier + parameters + function_style#, lambda h, s: FunctionNode(s[2].Lemma, s[3], s[4][1], s[4][0])
 statement %= type_ + identifier + type_def#, lambda h, s: TypeNode(s[2].Lemma, s[3][3], s[3][0], s[3][1], s[3][2])
