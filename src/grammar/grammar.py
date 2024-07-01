@@ -10,7 +10,7 @@ G = Grammar()
 # No Terminals
 init_ = G.NonTerminal("<init>", startSymbol=True)
 program = G.NonTerminal("<program>")
-expression = G.NonTerminal("<expression>")
+simple_expression = G.NonTerminal("<expression>")
 statement = G.NonTerminal("<statement>")
 parameters, parameter_list, variable = G.NonTerminals("<parameters> <parameter_list> <variable>")
 function_style = G.NonTerminal("<function_style>")
@@ -56,7 +56,7 @@ rand = G.Terminal("rand")
 sin, cos, sqrt, exp, log, tan, base = G.Terminals("sin cos sqrt exp log tan base")
 as_, is_ = G.Terminals("as is")
 
-init_ %= program#, lambda h, s: s[1]
+init_ %= program, lambda h, s: s[1]
 
 program%=simple_program
 program %= simple_program+program#, lambda h, s: ProgramNode([], s[1])
@@ -117,8 +117,7 @@ typed_parameter_list %= identifier + colon + identifier + typed_parameter_list#,
 main_expression %= simple_expression + semicolon#, lambda h, s: s[1]
 main_expression %= not_sc_expression#, lambda h, s: s[1]
 
-expression %= simple_expression#, lambda h, s: s[1]
-simple_expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
+# simple_expression %= simple_expression#, lambda h, s: s[1]
 
 
 expression_block %= main_expression#, lambda h, s: ExpressionBlockNode([s[1]])
@@ -127,36 +126,37 @@ expression_block %= expression_block + main_expression#, lambda h, s: Expression
 not_sc_expression %= let + declaration + in_ + not_sc_expression#, lambda h, s: LetNode(s[2][0], s[2][1], s[4])
 not_sc_expression %= identifier + destruct + not_sc_expression#, lambda h, s: DestructiveExpression(s[1].Lemma, s[3])
 not_sc_expression %= identifier + period + identifier + destruct + not_sc_expression#, lambda h, s: SelfDestructiveExpression(SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma), s[5])
-not_sc_expression %= if_ + lparen + disjunction + rparen + expression + else_block_not_sc#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
+not_sc_expression %= if_ + lparen + disjunction + rparen + simple_expression + else_block_not_sc#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
 not_sc_expression %= while_ + lparen + disjunction + rparen + not_sc_expression#, lambda h, s: WhileNode(s[3], s[5])
-not_sc_expression %= for_ + lparen + identifier + in_ + expression + rparen + not_sc_expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
+not_sc_expression %= for_ + lparen + identifier + in_ + simple_expression + rparen + not_sc_expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 not_sc_expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
 
 else_block_not_sc %= else_ + not_sc_expression#, lambda h, s: ([], [s[2]])
-else_block_not_sc %= elif_ + lparen + disjunction + rparen + expression + else_block_not_sc#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
+else_block_not_sc %= elif_ + lparen + disjunction + rparen + simple_expression + else_block_not_sc#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
 
-simple_expression %= let + declaration + in_ + expression#, lambda h, s: LetNode(s[2][0], s[2][1], s[4])
-simple_expression %= identifier + destruct + expression#, lambda h, s: DestructiveExpression(s[1].Lemma, s[3])
-simple_expression %= identifier + period + identifier + destruct + expression#, lambda h, s: SelfDestructiveExpression(SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma), s[5])
-simple_expression %= if_ + lparen + disjunction + rparen + expression + else_block#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
-simple_expression %= while_ + lparen + disjunction + rparen + expression#, lambda h, s: WhileNode(s[3], s[5])
-simple_expression %= for_ + lparen + identifier + in_ + expression + rparen + expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
+simple_expression %= let + declaration + in_ + simple_expression#, lambda h, s: LetNode(s[2][0], s[2][1], s[4])
+simple_expression %= identifier + destruct + simple_expression#, lambda h, s: DestructiveExpression(s[1].Lemma, s[3])
+simple_expression %= identifier + period + identifier + destruct + simple_expression#, lambda h, s: SelfDestructiveExpression(SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma), s[5])
+simple_expression %= if_ + lparen + disjunction + rparen + simple_expression + else_block#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
+simple_expression %= while_ + lparen + disjunction + rparen + simple_expression#, lambda h, s: WhileNode(s[3], s[5])
+simple_expression %= for_ + lparen + identifier + in_ + simple_expression + rparen + simple_expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 simple_expression %= new + identifier + arguments#, lambda h, s: NewNode(s[2].Lemma, s[3])
-# simple_expression %= lbrace + expression_block + rbrace
+simple_expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
+
 simple_expression %= disjunction#, lambda h, s: s[1]
 
 
-declaration %= variable + equal + expression#, lambda h, s: ([s[1]], [s[3]])
-declaration %= variable + equal + expression + comma + declaration#, lambda h, s: ([s[1]] + s[5][0], [s[3]]+s[5][1])
+declaration %= variable + equal + simple_expression#, lambda h, s: ([s[1]], [s[3]])
+declaration %= variable + equal + simple_expression + comma + declaration#, lambda h, s: ([s[1]] + s[5][0], [s[3]]+s[5][1])
 
-else_block %= else_ + expression#, lambda h, s: ([], [s[2]])
-else_block %= elif_ + lparen + disjunction + rparen + expression + else_block#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
+else_block %= else_ + simple_expression#, lambda h, s: ([], [s[2]])
+else_block %= elif_ + lparen + disjunction + rparen + simple_expression + else_block#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
 
 arguments %= lparen + rparen#, lambda h, s: []
 arguments %= lparen + argument_list + rparen#, lambda h, s: s[2]
 #
-argument_list %= expression#, lambda h, s: [s[1]]
-argument_list %= expression + comma + argument_list#, lambda h, s: [s[1]] + s[3]
+argument_list %= simple_expression#, lambda h, s: [s[1]]
+argument_list %= simple_expression + comma + argument_list#, lambda h, s: [s[1]] + s[3]
 
 disjunction %= conjunction#, lambda h, s: s[1]
 disjunction %= conjunction + or_ + disjunction#, lambda h, s: OrAndExpression('|', s[1], s[3])
@@ -208,18 +208,18 @@ high_hierarchy_object %= high_hierarchy_object + as_ + identifier#, lambda h, s:
 function_stack %= identifier + period + identifier + arguments#, lambda h, s: TypeFunctionCallNode(VariableNode(s[1].Lemma), s[3].Lemma, s[4])
 function_stack %= function_stack + period + identifier + arguments#, lambda h, s: TypeFunctionCallNode(s[1], s[3].Lemma, s[4])
 function_stack %= identifier + arguments#, lambda h, s: FunctionCallNode(s[1].Lemma, s[2])
-function_stack %= print_ + lparen + expression + rparen#, lambda h, s: FunctionCallNode('print', [s[3]])
-function_stack %= sin + lparen + expression + rparen#, lambda h, s: FunctionCallNode('sin', [s[3]])
-function_stack %= cos + lparen + expression + rparen#, lambda h, s: FunctionCallNode('cos', [s[3]])
-function_stack %= tan + lparen + expression + rparen#, lambda h, s: FunctionCallNode('tan', [s[3]])
-function_stack %= sqrt + lparen + expression + rparen#, lambda h, s: FunctionCallNode('sqrt', [s[3]])
-function_stack %= exp + lparen + expression + rparen#, lambda h, s: FunctionCallNode('exp', [s[3]])
-function_stack %= log + lparen + expression + comma + expression + rparen#, lambda h, s: FunctionCallNode('log', [s[3]] + [s[5]]) # duda
+function_stack %= print_ + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('print', [s[3]])
+function_stack %= sin + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('sin', [s[3]])
+function_stack %= cos + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('cos', [s[3]])
+function_stack %= tan + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('tan', [s[3]])
+function_stack %= sqrt + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('sqrt', [s[3]])
+function_stack %= exp + lparen + simple_expression + rparen#, lambda h, s: FunctionCallNode('exp', [s[3]])
+function_stack %= log + lparen + simple_expression + comma + simple_expression + rparen#, lambda h, s: FunctionCallNode('log', [s[3]] + [s[5]]) # duda
 function_stack %= rand + lparen + rparen#, lambda h, s: FunctionCallNode('rand', [])
-function_stack %= range_ + lparen + expression + comma + expression + rparen#, lambda h, s: FunctionCallNode('range', [s[3]] + [s[5]])
+function_stack %= range_ + lparen + simple_expression + comma + simple_expression + rparen#, lambda h, s: FunctionCallNode('range', [s[3]] + [s[5]])
 function_stack %= base + lparen + rparen#, lambda h, s: FunctionCallNode('base', [])
 function_stack %= identifier + period + identifier#, lambda h, s: SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma)
-function_stack %= lparen + expression + rparen#, lambda h, s: s[2]
+function_stack %= lparen + simple_expression + rparen#, lambda h, s: s[2]
 function_stack %= number#, lambda h, s: NumberNode(float(s[1].Lemma))
 function_stack %= pi#, lambda h, s: NumberNode(math.pi)
 function_stack %= e#, lambda h, s: NumberNode(math.e)
@@ -227,16 +227,16 @@ function_stack %= string#, lambda h, s: StringNode(s[1].Lemma)
 function_stack %= true#, lambda h, s: BooleanNode(True)
 function_stack %= false#, lambda h, s: BooleanNode(False)
 function_stack %= lbrack + list_ + rbrack#, lambda h, s: s[2]
-function_stack %= object_exp + lbrack + expression + rbrack#, lambda h, s: IndexingNode(s[1], s[3])
+function_stack %= object_exp + lbrack + simple_expression + rbrack#, lambda h, s: IndexingNode(s[1], s[3])
 
 object_exp %= identifier#, lambda h, s: VariableNode(s[1].Lemma)
 object_exp %= function_stack#, lambda h, s: s[1]
 #
 list_ %= explicit_list_#, lambda h, s: ListNode(s[1])
-list_ %= expression + list_comprehension + identifier + in_ + expression#, lambda h, s: ImplicitListNode(s[1], s[3].Lemma, s[5])
+list_ %= simple_expression + list_comprehension + identifier + in_ + simple_expression#, lambda h, s: ImplicitListNode(s[1], s[3].Lemma, s[5])
 
-explicit_list_ %= expression#, lambda h, s: [s[1]]
-explicit_list_ %= expression + comma + explicit_list_#, lambda h, s: [s[1]] + s[3]
+explicit_list_ %= simple_expression#, lambda h, s: [s[1]]
+explicit_list_ %= simple_expression + comma + explicit_list_#, lambda h, s: [s[1]] + s[3]
 
 
 def GetKeywords():
