@@ -118,7 +118,8 @@ main_expression %= simple_expression + semicolon#, lambda h, s: s[1]
 main_expression %= not_sc_expression#, lambda h, s: s[1]
 
 expression %= simple_expression#, lambda h, s: s[1]
-expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
+simple_expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
+
 
 expression_block %= main_expression#, lambda h, s: ExpressionBlockNode([s[1]])
 expression_block %= expression_block + main_expression#, lambda h, s: ExpressionBlockNode([s[2]] + s[1].EXPRESSIONS)
@@ -141,6 +142,7 @@ simple_expression %= if_ + lparen + disjunction + rparen + expression + else_blo
 simple_expression %= while_ + lparen + disjunction + rparen + expression#, lambda h, s: WhileNode(s[3], s[5])
 simple_expression %= for_ + lparen + identifier + in_ + expression + rparen + expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 simple_expression %= new + identifier + arguments#, lambda h, s: NewNode(s[2].Lemma, s[3])
+# simple_expression %= lbrace + expression_block + rbrace
 simple_expression %= disjunction#, lambda h, s: s[1]
 
 
