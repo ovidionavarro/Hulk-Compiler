@@ -61,10 +61,13 @@ init_ %= program#, lambda h, s: s[1]
 program%=simple_program
 program %= simple_program+program#, lambda h, s: ProgramNode([], s[1])
 # program %= statement + program#, lambda h, s: ProgramNode([s[1]] + s[2].STATEMENTS, s[2].EXPRESSION)
-
-statement %= function + identifier + parameters + function_style#, lambda h, s: FunctionNode(s[2].Lemma, s[3], s[4][1], s[4][0])
-statement %= type_ + identifier + type_def#, lambda h, s: TypeNode(s[2].Lemma, s[3][3], s[3][0], s[3][1], s[3][2])
-statement %= protocol_declare#, lambda h, s: s[1]
+simple_program %= main_expression#, lambda h, s: s[1]
+simple_program %= function + identifier + parameters + function_style#, lambda h, s: FunctionNode(s[2].Lemma, s[3], s[4][1], s[4][0])
+simple_program %= type_ + identifier + type_def#, lambda h, s: TypeNode(s[2].Lemma, s[3][3], s[3][0], s[3][1], s[3][2])
+simple_program %= protocol_declare#, lambda h, s: s[1]
+# statement %= function + identifier + parameters + function_style#, lambda h, s: FunctionNode(s[2].Lemma, s[3], s[4][1], s[4][0])
+# statement %= type_ + identifier + type_def#, lambda h, s: TypeNode(s[2].Lemma, s[3][3], s[3][0], s[3][1], s[3][2])
+# statement %= protocol_declare#, lambda h, s: s[1]
 #
 function_style %= darrow + simple_expression + semicolon#, lambda h, s: ("Object", s[2])
 function_style %= colon + identifier + darrow + simple_expression + semicolon#, lambda h, s: (s[2].Lemma, s[4])
@@ -111,11 +114,6 @@ typed_parameter_list %= identifier + colon + identifier + typed_parameter_list#,
 
 #----------------#
 
-simple_program %= main_expression#, lambda h, s: s[1]
-simple_program %= function + identifier + parameters + function_style#, lambda h, s: FunctionNode(s[2].Lemma, s[3], s[4][1], s[4][0])
-simple_program %= type_ + identifier + type_def#, lambda h, s: TypeNode(s[2].Lemma, s[3][3], s[3][0], s[3][1], s[3][2])
-simple_program %= protocol_declare#, lambda h, s: s[1]
-
 main_expression %= simple_expression + semicolon#, lambda h, s: s[1]
 main_expression %= not_sc_expression#, lambda h, s: s[1]
 
@@ -144,6 +142,7 @@ simple_expression %= while_ + lparen + expression + rparen + expression#, lambda
 simple_expression %= for_ + lparen + identifier + in_ + expression + rparen + expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 simple_expression %= new + identifier + arguments#, lambda h, s: NewNode(s[2].Lemma, s[3])
 simple_expression %= disjunction#, lambda h, s: s[1]
+
 
 declaration %= variable + equal + expression#, lambda h, s: ([s[1]], [s[3]])
 declaration %= variable + equal + expression + comma + declaration#, lambda h, s: ([s[1]] + s[5][0], [s[3]]+s[5][1])

@@ -1,11 +1,7 @@
+{
+}
 
-let a = 42 in let mod = a % 3 in
-    print(
-        if (mod == 0) "Magic"
-        elif (mod % 3 == 1) "Woke"
-        else "Dumb"
-    );
 
-let number = 42 in
-    let text = "The meaning of life is" in
-        print(text @ number);
+{
+23;
+};
