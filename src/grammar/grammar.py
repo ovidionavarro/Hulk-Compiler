@@ -126,19 +126,19 @@ expression_block %= expression_block + main_expression#, lambda h, s: Expression
 not_sc_expression %= let + declaration + in_ + not_sc_expression#, lambda h, s: LetNode(s[2][0], s[2][1], s[4])
 not_sc_expression %= identifier + destruct + not_sc_expression#, lambda h, s: DestructiveExpression(s[1].Lemma, s[3])
 not_sc_expression %= identifier + period + identifier + destruct + not_sc_expression#, lambda h, s: SelfDestructiveExpression(SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma), s[5])
-not_sc_expression %= if_ + lparen + expression + rparen + expression + else_block_not_sc#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
-not_sc_expression %= while_ + lparen + expression + rparen + not_sc_expression#, lambda h, s: WhileNode(s[3], s[5])
+not_sc_expression %= if_ + lparen + disjunction + rparen + expression + else_block_not_sc#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
+not_sc_expression %= while_ + lparen + disjunction + rparen + not_sc_expression#, lambda h, s: WhileNode(s[3], s[5])
 not_sc_expression %= for_ + lparen + identifier + in_ + expression + rparen + not_sc_expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 not_sc_expression %= lbrace + expression_block + rbrace#, lambda h, s: s[2]
 
 else_block_not_sc %= else_ + not_sc_expression#, lambda h, s: ([], [s[2]])
-else_block_not_sc %= elif_ + lparen + expression + rparen + expression + else_block_not_sc#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
+else_block_not_sc %= elif_ + lparen + disjunction + rparen + expression + else_block_not_sc#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
 
 simple_expression %= let + declaration + in_ + expression#, lambda h, s: LetNode(s[2][0], s[2][1], s[4])
 simple_expression %= identifier + destruct + expression#, lambda h, s: DestructiveExpression(s[1].Lemma, s[3])
 simple_expression %= identifier + period + identifier + destruct + expression#, lambda h, s: SelfDestructiveExpression(SelfVariableNode(s[1].Lemma == 'self', s[3].Lemma), s[5])
-simple_expression %= if_ + lparen + expression + rparen + expression + else_block#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
-simple_expression %= while_ + lparen + expression + rparen + expression#, lambda h, s: WhileNode(s[3], s[5])
+simple_expression %= if_ + lparen + disjunction + rparen + expression + else_block#, lambda h, s: IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
+simple_expression %= while_ + lparen + disjunction + rparen + expression#, lambda h, s: WhileNode(s[3], s[5])
 simple_expression %= for_ + lparen + identifier + in_ + expression + rparen + expression#, lambda h, s: ForNode(s[3].Lemma, s[5], s[7])
 simple_expression %= new + identifier + arguments#, lambda h, s: NewNode(s[2].Lemma, s[3])
 simple_expression %= disjunction#, lambda h, s: s[1]
@@ -148,7 +148,7 @@ declaration %= variable + equal + expression#, lambda h, s: ([s[1]], [s[3]])
 declaration %= variable + equal + expression + comma + declaration#, lambda h, s: ([s[1]] + s[5][0], [s[3]]+s[5][1])
 
 else_block %= else_ + expression#, lambda h, s: ([], [s[2]])
-else_block %= elif_ + lparen + expression + rparen + expression + else_block#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
+else_block %= elif_ + lparen + disjunction + rparen + expression + else_block#, lambda h, s: ([s[3]] + s[6][0], [s[5]] + s[6][1])
 
 arguments %= lparen + rparen#, lambda h, s: []
 arguments %= lparen + argument_list + rparen#, lambda h, s: s[2]
@@ -158,6 +158,7 @@ argument_list %= expression + comma + argument_list#, lambda h, s: [s[1]] + s[3]
 
 disjunction %= conjunction#, lambda h, s: s[1]
 disjunction %= conjunction + or_ + disjunction#, lambda h, s: OrAndExpression('|', s[1], s[3])
+
 #
 conjunction %= literal#, lambda h, s: s[1]
 conjunction %= literal + and_ + conjunction#, lambda h, s: OrAndExpression('&', s[1], s[3])

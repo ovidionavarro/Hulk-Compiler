@@ -4,7 +4,7 @@ import pickle
 from src.lexer.lexer import Lexer
 from src.lexer.symbol_table import  symbol_table
 from src.parser.parserLR1 import LR1Parser,G
-from src.grammar.jagrammar import *
+from src.grammar.grammar import *
 
 def save_pkl(arch,name):
     with open(name, "wb") as archivo:

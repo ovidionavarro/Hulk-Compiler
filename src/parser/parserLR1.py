@@ -3,7 +3,7 @@ from src.cmp.utils import ContainerSet
 from src.parser.utils_parse import compute_firsts, compute_local_first
 from src.cmp.automata import State, multiline_formatter
 from pandas import DataFrame
-from src.grammar.jagrammar import *
+from src.grammar.grammar import *
 
 def expand(item, firsts):
     next_symbol = item.NextSymbol
