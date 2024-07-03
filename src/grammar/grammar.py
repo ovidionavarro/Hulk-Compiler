@@ -58,7 +58,7 @@ as_, is_ = G.Terminals("as is")
 
 init_ %= program, lambda h,s:s[1]
 
-program%=simple_program, lambda h,s:ProgramNode(s[1])
+program%=simple_program, lambda h,s:ProgramNode([s[1]])
 program %= simple_program+program, lambda h,s:ProgramNode([s[1]]+s[2].statements)
 
 simple_program %= main_expression, lambda h,s:s[1]
@@ -121,11 +121,11 @@ main_expression %= not_sc_expression, lambda h,s:s[1]
 
 
 expression_block %= main_expression, lambda h,s:ExpressionBlockNode([s[1]])
-expression_block %= expression_block + main_expression, lambda h,s:ExpressionBlockNode([s[1]]+s[2].expressions)
+expression_block %= expression_block + main_expression, lambda h,s:ExpressionBlockNode([s[2]] + (s[1].expressions if isinstance(s[1].expressions, list) else [s[1].expressions]))
 
 not_sc_expression %= let + declaration + in_ + not_sc_expression, lambda h,s:LetNode(s[2][0], s[2][1], s[4])
-not_sc_expression %= identifier + destruct + not_sc_expression, lambda h,s:TypeAttributeNode(s[1],s[3])
-not_sc_expression %= identifier + period + identifier + destruct + not_sc_expression, lambda h,s:SelfDestructiveExpression(SelfVariableNode(s[1].lex == 'self', s[3]), s[5])
+not_sc_expression %= identifier + destruct + not_sc_expression, lambda h,s:DesctructiveExpression(s[1],s[3])
+not_sc_expression %= identifier + period + identifier + destruct + not_sc_expression, lambda h,s:SelfDesctructiveExpression(SelfVaraiableNode(s[1] == 'self', s[3]), s[5])
 not_sc_expression %= if_ + lparen + disjunction + rparen + simple_expression + else_block_not_sc, lambda h,s:IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
 not_sc_expression %= while_ + lparen + disjunction + rparen + not_sc_expression,lambda h,s:WhileNode(s[3],s[5])
 not_sc_expression %= for_ + lparen + identifier + in_ + simple_expression + rparen + not_sc_expression, lambda h,s:ForNode(s[3],s[5],s[7])
@@ -136,7 +136,7 @@ else_block_not_sc %= elif_ + lparen + disjunction + rparen + simple_expression +
 
 simple_expression %= let + declaration + in_ + simple_expression, lambda h,s:LetNode(s[2][0],s[2][1],s[4])
 simple_expression %= identifier + destruct + simple_expression, lambda h,s:DesctructiveExpression(s[1],s[3])
-simple_expression %= identifier + period + identifier + destruct + simple_expression, lambda h,s:SelfDesctructiveExpression(SelfVariableNode(s[1].lex == 'self', s[3]), s[5])
+simple_expression %= identifier + period + identifier + destruct + simple_expression, lambda h,s:SelfDesctructiveExpression(SelfVaraiableNode(s[1] == 'self', s[3]), s[5])
 simple_expression %= if_ + lparen + disjunction + rparen + simple_expression + else_block, lambda h,s:IfElseExpression([s[3]] + s[6][0], [s[5]] + s[6][1])
 simple_expression %= while_ + lparen + disjunction + rparen + simple_expression,lambda h,s:WhileNode(s[3],s[5])
 simple_expression %= for_ + lparen + identifier + in_ + simple_expression + rparen + simple_expression, lambda h,s:ForNode(s[3],s[5],s[7])
@@ -217,7 +217,7 @@ function_stack %= log + lparen + simple_expression + comma + simple_expression +
 function_stack %= rand + lparen + rparen, lambda h,s:FunctionCallNode('rand',[])
 function_stack %= range_ + lparen + simple_expression + comma + simple_expression + rparen, lambda h,s:FunctionCallNode('range',[s[3]],[s[5]])
 function_stack %= base + lparen + rparen, lambda h,s:FunctionCallNode('base',[])
-function_stack %= identifier + period + identifier, lambda h,s:SelfVaraiableNode(s[1].lex=='self',s[3])
+function_stack %= identifier + period + identifier, lambda h,s:SelfVaraiableNode(s[1]=='self',s[3])
 function_stack %= lparen + simple_expression + rparen, lambda h,s:s[2]
 function_stack %= number, lambda h,s:NumberNode(float(s[1]))
 function_stack %= pi, lambda h,s:NumberNode(math.pi)

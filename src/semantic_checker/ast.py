@@ -10,9 +10,9 @@ class StatementNode(Node):
 class ExpressionNode(StatementNode):
     def __init__(self):
         self.type_value='Object'
-class ProgramNode(Node):
-    def __int__(self,statements:List[StatementNode]):
-        self.statements=statements
+class ProgramNode:
+    def __init__(self, statements: List[StatementNode]):
+        self.statements = statements
 class ParameterNode(Node):
     def __init__(self,name:str,type:str='Object'):
         self.name=name
@@ -128,7 +128,7 @@ class VariableNode(ExpressionNode):
 class FunctionCallNode(ExpressionNode):
     def __init__(self, name: str, arguments: List[ExpressionNode]):
         self.funct = name
-        self.arfuments = arguments
+        self.arguments = arguments
         self.type_value = 'Object'
 
 class TypeFunctionCallNode(ExpressionNode):
