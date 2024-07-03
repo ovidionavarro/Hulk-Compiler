@@ -3,8 +3,9 @@ import os
 import pickle
 from src.lexer.lexer import Lexer
 from src.lexer.symbol_table import  symbol_table
-from src.parser.parserLR1 import LR1Parser,G
+from src.parser.parserLR1 import LR1Parser
 from src.grammar.grammar import *
+from src.cmp.evaluation import evaluate_reverse_parse
 
 def save_pkl(arch,name):
     with open(name, "wb") as archivo:
@@ -40,7 +41,11 @@ if __name__ == "__main__":
         print(tokens)
     #PARSER
         print('Parseando')
-        parser,operations=parser([t.token_type for t in tokens])
+        parse,operations=parser([t.token_type for t in tokens])
+        print(tokens)
+    # AST
+        ast=evaluate_reverse_parse(parse,operations,tokens)
+        print(ast)
     except FileNotFoundError:
         print(f"Error: El archivo '{filename}' no fue encontrado.")
     except Exception as e:
