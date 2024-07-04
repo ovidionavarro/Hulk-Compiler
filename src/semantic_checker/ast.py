@@ -18,7 +18,7 @@ class ParameterNode(Node):
         self.name=name
         self.type=type
 class FunctionNode(StatementNode):
-    def __init__(self,name:str,parameters:List[ParameterNode],corpus:[ExpressionNode],type:str='Object'):
+    def __init__(self,name:str,parameters:List[ParameterNode],corpus:ExpressionNode,type:str='Object'):
         self.name=name
         self.parameters=parameters
         self.corpus=corpus

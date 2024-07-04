@@ -8,6 +8,7 @@ let a = 42 in let mod = a % 3 in
 protocol Equatable extends Hashable {
     equals(other: Object): Boolean;
 }
+
 let pt = new Point(3,4) in
     print("x: " @ pt.getX() @ "; y: " @ pt.getY());
 
