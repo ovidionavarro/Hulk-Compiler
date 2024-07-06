@@ -14,12 +14,22 @@ class TypeCollector(object):
     @visitor.when(ProgramNode)
     def visit(self, node):
         self.context=Hulk_Context()
-        self.context.types['int']=NumType()
+        self.context.types['Number']=NumType()
         self.context.types['String'] = StringType()        
         self.context.types['Boolean'] = BoolType()
         self.context.types['None'] = NoneType()   
         self.context.types['Object'] = ObjectType()    
         self.context.types['<error>'] = ErrorType()
+        self.context.create_func('sin',[ParameterNode('angle','Number')],NumType())
+        self.context.create_func('cos',[ParameterNode('angle','Number')],NumType())
+        self.context.create_func('tan',[ParameterNode('angle','Number')],NumType())
+        self.context.create_func('print',[ParameterNode('value','Object')],NoneType())
+        self.context.create_func('log',[ParameterNode('base','Number'),ParameterNode('value','Number')],NumType())
+        self.context.create_func('sqrt',[ParameterNode('value','Number')],NumType())
+        self.context.create_func('exp',[ParameterNode('value','Number')],NumType())
+        self.context.create_func('rand',[],NoneType())
+        
+        
         for statement in node.statements:
             if isinstance(statement,TypeNode) or isinstance(statement,ProtocolNode) or isinstance(statement,FunctionNode):
                 self.visit(statement)
