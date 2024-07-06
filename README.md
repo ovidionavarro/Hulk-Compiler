@@ -27,7 +27,7 @@
 Clone the Repository:
 
 ```bash
-git clone https://github.com/maot2001/Compiler-HULK.git
+git clone https://github.com/ovidionavarro/Hulk-Compiler.git
 ```
 
 Navigate to the Project Directory:
