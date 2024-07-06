@@ -128,7 +128,7 @@ class PrintVisitor(object):
     
     @visitor.when(TypeFunctionCallNode)
     def visit(self, node, tabs=0):
-        ans = '\t' * tabs + f'\\TypeFunctionCallNode {node.name}'
+        ans = '\t' * tabs + f'\\TypeFunctionCallNode {node.funct}'
         arguments = '\n'.join(self.visit(child, tabs + 1) for child in node.arguments)
         return f'{ans}\n{arguments}'
         
