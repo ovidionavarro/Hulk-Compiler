@@ -1,0 +1,21 @@
+
+protocol Equatable extends Hashable {
+    equals(other: Object): Boolean;
+}
+type Point {
+    x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+let a = 42 in print(a);
+let a = 42 in let mod =3 in
+    print(
+        if (mod == 0) "Magic"
+        elif (algo[2]==3) "Woke"
+        else "Dumb"
+    );
