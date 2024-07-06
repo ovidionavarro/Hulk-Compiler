@@ -9,7 +9,7 @@ class Hulk_Context(Context):
         self.protocol={}
     def create_func(self, name, params, return_type):
         if name in self.func:
-            raise SemanticError(f'Type with the same name ({name}) already in context.')
+            raise SemanticError(f'Function with the same name ({name}) already in context.')
         for _param in params:
             if _param.type is None:
                 _param.type=NoneType()
@@ -22,11 +22,11 @@ class Hulk_Context(Context):
         try:
             return self.func[name]
         except KeyError:
-            raise SemanticError(f'func "{name}" is not defined.')
+            raise SemanticError(f'Function "{name}" is not defined.')
         
-    def create_protocol(self,name,parents):
+    def create_protocol(self,name,parents=None):
         if name in self.protocol:
-            raise SemanticError(f'Type with the same name ({name}) already in context.')
+            raise SemanticError(f'Protocol with the same name ({name}) already in context.')
         typex = self.protocol[name] = Protocol(name,parents)
         return typex
     def get_protocol(self,name:str):
@@ -38,6 +38,7 @@ class Hulk_Context(Context):
         
     def __str__(self):
         types_str='Types: {\n\t' + '\n\t'.join(y for x in self.types.values() for y in str(x).split('\n')) + '\n}'
-        func_str='Funcs: {\n\t' + '\n\t'.join(y for x in self.func.values() for y in str(x).split('\n')) + '\n}'
-        return types_str+'\n'+func_str
+        func_str='Functions: {\n\t' + '\n\t'.join(y for x in self.func.values() for y in str(x).split('\n')) + '\n}'
+        protocol_str='Protocol: {\n\t' + '\n\t'.join(y for x in self.protocol.values() for y in str(x).split('\n')) + '\n}'
+        return types_str+'\n'+func_str +'\n'+protocol_str
     

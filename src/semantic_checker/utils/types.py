@@ -1,19 +1,19 @@
 from src.cmp.semantic import Type,Context,SemanticError,Method
 class ObjectType(Type):
-    def __init__(self):
-        super().__init__(self,'Object')
+    def __init__(self,name:str='Object'):
+        super().__init__(name)
 
     def __eq__(self, other: object):
         return other.name==self.name or isinstance(other,NumType) or isinstance(other,StringType) or isinstance(other,BoolType) or isinstance(other,ObjectType)
     
 class NoneType(Type):
     def __init__(self):
-        super().__init__(self,'None')
+        super().__init__('None')
 
 
 class NumType(ObjectType):
     def __init__(self):
-        super().__init__(self, 'Number')
+        super().__init__('Number')
     
     def __eq__(self, other: object):
         return other.name == self.name or isinstance(other, NumType) or isinstance(other, ObjectType)
@@ -21,21 +21,21 @@ class NumType(ObjectType):
 
 class StringType(ObjectType):
     def __init__(self):
-        super().__init__(self,'String')
+        super().__init__('String')
 
     def __eq__(self, other: object):
         return other.name == self.name or isinstance(other, StringType) or isinstance(other, ObjectType)
         
 class BoolType(ObjectType):
     def __init__(self):
-        super().__init__(self,'Bool')
+        super().__init__('Bool')
 
     def __eq__(self, other):
         return other.name == self.name or isinstance(other, BoolType) or isinstance(other, ObjectType)
 
 class ErrorType(Type):    
     def __init__(self):
-        super.__init__(self, '<error>')
+        super().__init__('<error>')
 
     def conforms_to(self, other):
         return True

@@ -1,10 +1,2 @@
-let pt = new Point(3,4) in
-    print("x: " @ pt.getX() @ "; y: " @ pt.getY());
-
-let a = 42 in
-    if (1) {
-        print(a);
-        print("Even");
-    }
-    else print("Odd");
-
+function cot(x) => 1 / tan(x);
+function trr(x) => sin(x) / cos(x);

@@ -7,6 +7,7 @@ from src.parser.parserLR1 import LR1Parser
 from src.grammar.grammar import *
 from src.cmp.evaluation import evaluate_reverse_parse
 from src.semantic_checker.visitor_print import *
+from src.semantic_checker.type_collector import *
 import dill
 
 
@@ -70,6 +71,15 @@ if __name__ == "__main__":
         print(ast)
         formater=PrintVisitor()
         print(formater.visit(ast))
+    #Type Collector
+        collector = TypeCollector()
+        collector.visit(ast)
+
+        context = collector.context
+
+        print('Errors:', collector.errors)
+        print('Context:')
+        print(context)
 
 
 

@@ -1,18 +1,18 @@
 from src.cmp.semantic import SemanticError,Method
 
 class Func:
-    def __init__(self,name,args,return_type) :
+    def __init__(self,name,args=[],return_type='object') :
         self.name = name
         self.param_names = args
         self.return_type = return_type
 
     def __str__(self):
-        output = f'func {self.name}'
+        output = self.name
         output += ' ('
-        params = ', '.join(f'{n.id}:{n.type.name}' for n in self.param_names)
+        params = ', '.join(f'{n.name}:{n.type}' for n in self.param_names)
         output += params
         output += ') :'
-        output += self.return_type.name
+        output += self.return_type
         return output
 
     def __eq__(self, other):
