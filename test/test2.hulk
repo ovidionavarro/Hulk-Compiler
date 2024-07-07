@@ -1,2 +1,12 @@
-function cot(x) => 1 / tan(x);
-function trr(x) => sin(x) / cos(x);
+function sin(x) => 1 / tan(x);
+function trr(x) => sien(x) / cos(x);
+type Number {
+    x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}

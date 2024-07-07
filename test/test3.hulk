@@ -12,7 +12,7 @@ type Point {
     setX(x) => self.x := x;
     setY(y) => self.y := y;
 }
-function cot(x) => 1 / tan(x);
+function cot(angle:Number): Number => 1 / tan(x);
 function trr(x) => sin(x) / cos(x);
 type Point3 {
     x = 4;
