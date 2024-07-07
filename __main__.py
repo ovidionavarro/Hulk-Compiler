@@ -77,10 +77,10 @@ if __name__ == "__main__":
 
         context = collector.context
 
-        print('Errors:', collector.errors)
+        
         print('Context:')
         print(context)
-
+        print('Errors:', collector.errors)
 
 
     except FileNotFoundError:
