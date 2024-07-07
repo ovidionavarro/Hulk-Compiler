@@ -3,6 +3,14 @@ from src.semantic_checker.ast import *
 from src.semantic_checker.utils.context import *
 from src.semantic_checker.utils.types import *
 
+
+def check_parents(initial_type,parent):
+    this_type = parent.name
+    if initial_type == this_type:
+        return True
+    if parent.parent:
+       return check_parents(initial_type,parent.parent)
+    else: return False
 class TypeCollector(object):
     def __init__(self,errors=[]) :
         self.context=None
@@ -102,6 +110,9 @@ class TypeBuilder:
                     self.errors.append(ex.text)
             except SemanticError as ex:
                 self.errors.append(ex.text)
+            if check_parents(self.current_type.name,self.current_type.parent):
+                error= SemanticError("Cyclic inheritance is not allowed.")
+                self.errors.append(error.text)
         for corp in node.corpus:
             self.visit(corp)
     

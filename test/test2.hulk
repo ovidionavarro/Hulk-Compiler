@@ -1,16 +1,4 @@
-
-type Numbaaer {
-    x = 0;
-    y = 0;
-
-    getX() => self.x;
-    getx() => self.y;
-
-    setX(x) => self.x := x;
-    setY(y) => self.y := y;
-}
-
-type Point {
+type Point inherits PolarPoint {
     x = 0;
     y = 0;
 
@@ -21,8 +9,20 @@ type Point {
     setY(y) => self.y := y;
 }
 
-type PolarPoint inherits Point {
+type Numbaaer inherits Point{
+    z = 0;
     y = 0;
+
+    getX() => self.x;
+    getx() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+
+
+
+type PolarPoint {
     rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
     getX():Boolean => self.x;
     getY():Boolean => self.y;
