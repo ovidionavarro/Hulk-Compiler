@@ -31,7 +31,7 @@ symbol_table=[
     (true, "true"),
     (false, "false"),
     (extends, "extends"),
-    (sin, "sin"),
+    # (sin, "sin"),
     (cos, "cos"),
     (tan, "tan"),
     (sqrt, "sqrt"),

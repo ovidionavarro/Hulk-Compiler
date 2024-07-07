@@ -12,7 +12,7 @@ class Func:
         params = ', '.join(f'{n.name}:{n.type}' for n in self.param_names)
         output += params
         output += ') :'
-        output += self.return_type
+        output += str(self.return_type)
         return output
 
     def __eq__(self, other):

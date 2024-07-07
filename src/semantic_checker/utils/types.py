@@ -14,7 +14,6 @@ class NoneType(Type):
 class NumType(ObjectType):
     def __init__(self):
         super().__init__('Number')
-    
     def __eq__(self, other: object):
         return other.name == self.name or isinstance(other, NumType) or isinstance(other, ObjectType)
         
