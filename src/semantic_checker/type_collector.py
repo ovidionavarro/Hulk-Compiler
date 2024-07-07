@@ -115,6 +115,9 @@ class TypeBuilder:
         
         if node.inherits:
             try:
+                if node.inherits in ['Number','Boolean','String']:
+                    error= SemanticError('cannot be inherited from Number, Boolean or String')
+                    self.errors.append(error.text)
                 parent_type=self.context.get_type(node.inherits)
                 try:
                     self.current_type.set_parent(parent_type)
@@ -130,7 +133,7 @@ class TypeBuilder:
         
         if check_methods(self.current_type,self.current_type.parent):
                 error= SemanticError("Using the same method name with different arguments is not allowed.")
-                self.errors.append(error)
+                self.errors.append(error.text)
     
     @visitor.when(FunctionNode)
     def visit(self,node):

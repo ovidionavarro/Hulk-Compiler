@@ -1,11 +1,11 @@
-type Person(firstname, lastname) {
+type Person inherits String (firstname, lastname) {
     firstname = firstname;
     lastname = lastname;
 
     name() => self.firstname @@ self.lastname;
 }
 type Knight inherits Person {
-    name() => "Sir" @@ base();
+    name(a) => "Sir" @@ base();
 }
 
 let p = new Knight("Phil", "Collins") in
