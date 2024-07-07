@@ -21,16 +21,23 @@ class Func:
             #other.param_types == self.param_types   
     
 class Protocol:
-    def __init__(self,name:str,parent=None):
+    def __init__(self,name:str,methods:list,parent=None):
         self.name=name
         self.parent = parent
         self.methods=[]
+        for m in methods:
+            self.define_method(m.name,m.parameters,m.type)
 
-    def define_method(self, name:str, param_names:list, param_types:list, return_type):
+    def define_method(self, name:str, params:list, return_type):
         if name in (method.name for method in self.methods):
             raise SemanticError(f'Method "{name}" already defined in {self.name}')
-
-        method = Method(name, param_names, param_types, return_type)
+        params_names=[]
+        params_types=[]
+        for met in params:
+            params_names.append(met.name)
+            params_types.append(met.type)
+            
+        method = Method(name, params_names,params_types, return_type)
         self.methods.append(method)
         return method
 

@@ -28,7 +28,7 @@ class TypeCollector(object):
         self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],NumType())
         self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],NumType())
         self.context.func['rand']=Func('rand',[],NoneType())
-        
+        self.context.protocol['iterable']=Protocol('iterable',[ProtocolMethodNode('next',[],BoolType()),ProtocolMethodNode('current',[],ObjectType())],None)
         
         for statement in node.statements:
             if isinstance(statement,TypeNode) or isinstance(statement,ProtocolNode) or isinstance(statement,FunctionNode):
