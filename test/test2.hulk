@@ -1,6 +1,16 @@
-function sisn(x) => 1 / tan(x);
-function ass(x) => sien(x) / cos(x);
+
 type Numbaaer {
+    x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getx() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+
+type Point {
     x = 0;
     y = 0;
 
@@ -10,7 +20,10 @@ type Numbaaer {
     setX(x) => self.x := x;
     setY(y) => self.y := y;
 }
-protocol Equatable  {
-    equals(other: Object): Boolean;
-    equaals(other: Object): Boolean;
+
+type PolarPoint inherits Point {
+    y = 0;
+    rho() => sqrt(self.getX() ^ 2 + self.getY() ^ 2);
+    getX():Boolean => self.x;
+    getY():Boolean => self.y;
 }

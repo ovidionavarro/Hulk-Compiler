@@ -57,3 +57,85 @@ class TypeCollector(object):
             self.context.create_protocol(node.name,node.corpus,node.extends)
         except SemanticError as ex:
             self.errors.append(ex.text)
+
+
+class TypeBuilder:
+    def __init__(self,context,error=[]):
+        self.context=context
+        self.current_type=None
+        self.errors=error
+
+    @visitor.on('node')
+    def visit(self,node):
+        pass
+
+####Verificar primero los typos y protocolos que heredan de object o no lo hacen
+    @visitor.when(ProgramNode)
+    def visit(self,node):
+        for statement in node.statements:
+            if isinstance(statement,TypeNode):
+                if statement.inherits=='Object':
+                    self.visit(statement)
+            if isinstance(statement,ProtocolNode):
+                if statement.extends=='':
+                    self.visit(statement)
+        for statement in node.statements:
+            if isinstance(statement,TypeNode):
+                if statement.inherits!='Object':
+                    self.visit(statement)
+            if isinstance(statement,ProtocolNode):
+                if statement.extends!='':
+                    self.visit(statement)
+            if isinstance(statement,FunctionNode):
+                self.visit(statement)        
+
+    @visitor.when(TypeNode)
+    def visit(self,node):
+        self.current_type=self.context.get_type(node.name)
+        
+        if node.inherits:
+            try:
+                parent_type=self.context.get_type(node.inherits)
+                try:
+                    self.current_type.set_parent(parent_type)
+                except SemanticError as ex:
+                    self.errors.append(ex.text)
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+        for corp in node.corpus:
+            self.visit(corp)
+    
+    @visitor.when(FunctionNode)
+    def visit(self,node):
+        params_names=[]
+        params_types=[]
+        for params in node.parameters:
+            params_names.append(params.name)
+            try:
+                param_type=self.context.get_type(params.type)
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+                param_type=ErrorType()
+            params_types.append(param_type)  
+        try:
+            type=self.context.get_type(node.type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+            type=ErrorType()     
+        
+        try:
+            self.current_type.define_method(node.name,params_names,params_types,type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+
+    @visitor.when(TypeAttributeNode)
+    def visit(self,node):
+        try:
+            att_type=self.context.get_type(node.var.type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+            att_type=ErrorType()
+        try:
+            self.current_type.define_attribute(node.var.name,att_type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)

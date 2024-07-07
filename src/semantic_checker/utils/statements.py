@@ -25,8 +25,8 @@ class Protocol:
         self.name=name
         self.parent = parent
         self.methods=[]
-        for m in methods:
-            self.define_method(m.name,m.parameters,m.type)
+        # for m in methods:
+        #     self.define_method(m.name,m.parameters,m.type)
     def define_method(self, name:str, params:list, return_type):
         if name in (method.name for method in self.methods):
             raise SemanticError(f'Method "{name}" already defined in {self.name}')
