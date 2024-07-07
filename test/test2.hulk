@@ -1,4 +1,4 @@
-type Point inherits PolarPoint {
+type Point  {
     x = 0;
     y = 0;
 
@@ -13,7 +13,7 @@ type Numbaaer inherits Point{
     z = 0;
     y = 0;
 
-    getX() => self.x;
+    getX(m) => self.x;
     getx() => self.y;
 
     setX(x) => self.x := x;

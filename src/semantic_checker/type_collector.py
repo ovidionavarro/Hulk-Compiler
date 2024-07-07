@@ -3,6 +3,18 @@ from src.semantic_checker.ast import *
 from src.semantic_checker.utils.context import *
 from src.semantic_checker.utils.types import *
 
+def check_methods(node,parent):
+    if parent is None:
+        return False
+    this_type = parent.name
+    if node.name == this_type:
+        return False
+    for n in node.methods:
+        for p in parent.methods:
+            if n.name == p.name:
+                if len(n.param_names) != len(p.param_names):
+                    return True
+    return check_methods(node,parent.parent)
 
 def check_parents(initial_type,parent):
     this_type = parent.name
@@ -115,6 +127,10 @@ class TypeBuilder:
                 self.errors.append(error.text)
         for corp in node.corpus:
             self.visit(corp)
+        
+        if check_methods(self.current_type,self.current_type.parent):
+                error= SemanticError("Using the same method name with different arguments is not allowed.")
+                self.errors.append(error)
     
     @visitor.when(FunctionNode)
     def visit(self,node):
