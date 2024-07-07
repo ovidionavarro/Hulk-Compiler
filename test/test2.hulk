@@ -1,6 +1,6 @@
-function sin(x) => 1 / tan(x);
-function trr(x) => sien(x) / cos(x);
-type Number {
+function sins(x) => 1 / tan(x);
+function coss(x) => sien(x) / cos(x);
+type Numbers {
     x = 0;
     y = 0;
 

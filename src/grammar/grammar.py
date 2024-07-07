@@ -240,8 +240,8 @@ explicit_list_ %= simple_expression + comma + explicit_list_, lambda h,s:[s[1]]+
 
 def GetKeywords():
     return [for_, let, if_, else_, elif_, while_, function, pi, e, print_,
-            new, inherits, protocol, type_, in_, range_, true, false, extends, as_,
-            rand, sin, cos, sqrt, exp, log, is_, tan, base]
+            new, inherits, protocol, type_, in_, range_, true, false, extends, as_,is_]
+            # rand, sin, cos, sqrt, exp, log , tan, base]
 
 # from parserLr1 import LR1Parser
 # parse=LR1Parser(G,verbose=True)
