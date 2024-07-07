@@ -19,7 +19,7 @@ symbol_table=[
     (elif_, "elif"),
     (while_, "while"),
     (function, "function"),
-    (print_, "print"),
+    # (print_, "print"),
     (pi, "pi"),
     (e, "e"),
     (new, "new"),

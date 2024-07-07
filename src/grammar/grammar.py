@@ -48,7 +48,7 @@ destruct, concat = G.Terminals(":= @")
 list_comprehension = G.Terminal("||")
 
 for_, let, if_, else_, elif_ = G.Terminals("for let if else elif")
-while_, function, pi, e, print_ = G.Terminals("while function pi e print")
+while_, function, pi, e = G.Terminals("while function pi e ")
 new, inherits, protocol, type_, in_, range_, extends = G.Terminals("new inherits protocol type in range extends")
 true, false = G.Terminals("true false")
 
