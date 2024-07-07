@@ -25,7 +25,7 @@ class Hulk_Context(Context):
             raise SemanticError(f'Function "{name}" is not defined.')
         
     def create_protocol(self,name,methods,parents=None):
-        if name in self.protocol:
+        if name in self.protocol.keys():
             raise SemanticError(f'Protocol with the same name ({name}) already in context.')
         typex = self.protocol[name] = Protocol(name,methods,parents)
         return typex
@@ -40,5 +40,6 @@ class Hulk_Context(Context):
         types_str='Types: {\n\t' + '\n\t'.join(y for x in self.types.values() for y in str(x).split('\n')) + '\n}'
         func_str='Functions: {\n\t' + '\n\t'.join(y for x in self.func.values() for y in str(x).split('\n')) + '\n}'
         protocol_str='Protocol: {\n\t' + '\n\t'.join(y for x in self.protocol.values() for y in str(x).split('\n')) + '\n}'
+        
         return types_str+'\n'+func_str +'\n'+protocol_str
     

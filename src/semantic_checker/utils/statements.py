@@ -27,7 +27,6 @@ class Protocol:
         self.methods=[]
         for m in methods:
             self.define_method(m.name,m.parameters,m.type)
-
     def define_method(self, name:str, params:list, return_type):
         if name in (method.name for method in self.methods):
             raise SemanticError(f'Method "{name}" already defined in {self.name}')
@@ -39,8 +38,9 @@ class Protocol:
             
         method = Method(name, params_names,params_types, return_type)
         self.methods.append(method)
+        print(self)
         return method
-
+        
     def get_method(self, name:str):
         try:
             return next(method for method in self.methods if method.name == name)

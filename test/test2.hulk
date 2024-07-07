@@ -1,6 +1,6 @@
-function sins(x) => 1 / tan(x);
-function coss(x) => sien(x) / cos(x);
-type Numbers {
+function sisn(x) => 1 / tan(x);
+function ass(x) => sien(x) / cos(x);
+type Numbaaer {
     x = 0;
     y = 0;
 
@@ -9,4 +9,8 @@ type Numbers {
 
     setX(x) => self.x := x;
     setY(y) => self.y := y;
+}
+protocol Equatable  {
+    equals(other: Object): Boolean;
+    equaals(other: Object): Boolean;
 }
