@@ -1,1 +1,19 @@
-44;
+protocol Hashable  {
+    hash(a:Boolean): Number;
+}
+
+protocol Equatable extends Hashable {
+    equals(other: Object): Boolean;
+}
+type Person (firstname, lastname) {
+    firstname = firstname;
+    lastname = lastname;
+
+    name() => self.firstname @@ self.lastname;
+}
+type Knight inherits Person {
+    name() => "Sir" @@ base();
+}
+
+function cot(angle:Number): Number => 1 / tan(x);
+function trr(x) => sin(x) / cos(x);

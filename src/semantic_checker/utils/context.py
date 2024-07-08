@@ -24,10 +24,10 @@ class Hulk_Context(Context):
         except KeyError:
             raise SemanticError(f'Function "{name}" is not defined.')
         
-    def create_protocol(self,name,methods,parents=None):
+    def create_protocol(self,name):
         if name in self.protocol.keys():
             raise SemanticError(f'Protocol with the same name ({name}) already in context.')
-        typex = self.protocol[name] = Protocol(name,methods,parents)
+        typex = self.protocol[name] = Protocol(name)
         return typex
     def get_protocol(self,name:str):
         try:

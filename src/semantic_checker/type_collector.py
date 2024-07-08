@@ -48,8 +48,9 @@ class TypeCollector(object):
         self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],NumType())
         self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],NumType())
         self.context.func['rand']=Func('rand',[],NoneType())
-        self.context.create_protocol('iterable',[ProtocolMethodNode('next',[],BoolType()),ProtocolMethodNode('current',[],ObjectType())],None)
-        
+        self.context.create_protocol('iterable')
+        self.context.protocol['iterable'].define_method('next',[],BoolType())
+        self.context.protocol['iterable'].define_method('current',[],ObjectType())
         for statement in node.statements:
             if isinstance(statement,TypeNode) or isinstance(statement,ProtocolNode) or isinstance(statement,FunctionNode):
                 self.visit(statement)
@@ -70,11 +71,8 @@ class TypeCollector(object):
 
     @visitor.when(ProtocolNode)
     def visit(self,node):
-        try:
-            if node.extends=='':
-                node.extends=None
-                
-            self.context.create_protocol(node.name,node.corpus,node.extends)
+        try:    
+            self.context.create_protocol(node.name)
         except SemanticError as ex:
             self.errors.append(ex.text)
 
@@ -106,8 +104,8 @@ class TypeBuilder:
             if isinstance(statement,ProtocolNode):
                 if statement.extends!='':
                     self.visit(statement)
-            if isinstance(statement,FunctionNode):
-                self.visit(statement)        
+            # if isinstance(statement,FunctionNode):
+            #     self.visit(statement)        
 
     @visitor.when(TypeNode)
     def visit(self,node):
@@ -167,5 +165,49 @@ class TypeBuilder:
             att_type=ErrorType()
         try:
             self.current_type.define_attribute(node.var.name,att_type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+    
+    @visitor.when(ProtocolNode)
+    def visit(self,node):
+        self.current_protocol=self.context.get_protocol(node.name)
+
+        if node.extends!='':
+            try:
+                parent_protocol=self.context.get_protocol(node.extends)
+                try:
+                    self.current_protocol.set_parent(parent_protocol)
+                except SemanticError as ex:
+                    self.errors.append(ex.text)
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+            if check_parents(self.current_protocol.name,self.current_protocol.parent):
+                error= SemanticError("Cyclic extends is not allowed.")
+                self.errors.append(error.text)
+        for corp in node.corpus:
+            self.visit(corp)
+
+    @visitor.when(ProtocolMethodNode)
+    def visit(self,node):
+       
+        # params_names=[]
+        # params_types=[]
+        for params in node.parameters:
+            # params_names.append(params.name)
+            try:
+                params.type=self.context.get_type(params.type)
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+                param_type=ErrorType()
+            # params_types.append(param_type)  
+        try:
+            type=self.context.get_type(node.type)
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+            type=ErrorType()
+             
+        
+        try:
+            self.current_protocol.define_method(node.name,node.parameters,type)
         except SemanticError as ex:
             self.errors.append(ex.text)
