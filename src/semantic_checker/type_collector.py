@@ -40,14 +40,14 @@ class TypeCollector(object):
         self.context.types['None']=NoneType()   
         self.context.types['Object']=ObjectType()   
         self.context.types['<error>']=ErrorType()
-        self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],NumType())
-        self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],NumType())
-        self.context.func['tan']=Func('tan',[ParameterNode('angle','Number')],NumType())
-        self.context.func['print']=Func('print',[ParameterNode('value','Object')],NoneType())
-        self.context.func['log']=Func('log',[ParameterNode('base','Number'),ParameterNode('value','Number')],NumType())
-        self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],NumType())
-        self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],NumType())
-        self.context.func['rand']=Func('rand',[],NoneType())
+        self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],'Number')
+        self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],'Number')
+        self.context.func['tan']=Func('tan',[ParameterNode('angle','Number')],'Number')
+        self.context.func['print']=Func('print',[ParameterNode('value','Object')],'Boolean')
+        self.context.func['log']=Func('log',[ParameterNode('base','Number'),ParameterNode('value','Number')],'Number')
+        self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],'Number')
+        self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],'Number')
+        self.context.func['rand']=Func('rand',[],'None')
         self.context.create_protocol('iterable')
         self.context.protocol['iterable'].define_method('next',[],BoolType())
         self.context.protocol['iterable'].define_method('current',[],ObjectType())
@@ -132,6 +132,8 @@ class TypeBuilder:
         if check_methods(self.current_type,self.current_type.parent):
                 error= SemanticError("Using the same method name with different arguments is not allowed.")
                 self.errors.append(error.text)
+        
+
     
     @visitor.when(FunctionNode)
     def visit(self,node):
@@ -186,7 +188,7 @@ class TypeBuilder:
                 self.errors.append(error.text)
         for corp in node.corpus:
             self.visit(corp)
-
+            
     @visitor.when(ProtocolMethodNode)
     def visit(self,node):
        
@@ -215,8 +217,8 @@ class TypeBuilder:
     def update_globals_function(self):
         for func in self.context.func.values():
             
-            if func.name in ['sin','cos','tan','log','sqrt','exp','rand','print']:
-                continue
+            # if func.name in ['sin','cos','tan','log','sqrt','exp','rand','print']:
+            #     continue
             try:
                 func.return_type=self.context.get_type(func.return_type)
             except SemanticError as ex:
