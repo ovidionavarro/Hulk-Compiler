@@ -3,13 +3,13 @@ from src.cmp.semantic import SemanticError,Method
 class Func:
     def __init__(self,name,args=[],return_type='Object') :
         self.name = name
-        self.param_names = args
+        self.params = args
         self.return_type = return_type
 
     def __str__(self):
         output = self.name
         output += ' ('
-        params = ', '.join(f'{n.name}:{n.type}' for n in self.param_names)
+        params = ', '.join(f'{n.name}:{n.type}' for n in self.params)
         output += params
         output += ') :'
         output += str(self.return_type)

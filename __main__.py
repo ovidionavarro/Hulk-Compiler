@@ -82,13 +82,14 @@ if __name__ == "__main__":
         print(context)
         print('Errors:', collector.errors)
     # Type_Builder
-        # print('\n Type Builder:\n')
-# 
-        # builder = TypeBuilder(context, collector.errors)
-        # builder.visit(ast)
-        # print(context)
-        # print('Errors:', builder.errors)
-# 
+        print('\n Type Builder:\n')
+
+        builder = TypeBuilder(context, collector.errors)
+        builder.visit(ast)
+        builder.update_globals_function()
+        print(context)
+        print('Errors:', builder.errors)
+
 
 
     except FileNotFoundError:

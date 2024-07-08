@@ -10,11 +10,11 @@ class Hulk_Context(Context):
     def create_func(self, name, params, return_type):
         if name in self.func:
             raise SemanticError(f'Function with the same name ({name}) already in context.')
-        for _param in params:
-            if _param.type is None:
-                _param.type=NoneType()
-            else:
-                _param.type=self.get_type(_param.type)
+        # for _param in params:
+        #     if _param.type is None:
+        #         _param.type=NoneType()
+        #     else:
+        #         _param.type=self.get_type(_param.type)
         typex = self.func[name] = Func(name,params,return_type)
         return typex
 

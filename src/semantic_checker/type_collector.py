@@ -211,3 +211,20 @@ class TypeBuilder:
             self.current_protocol.define_method(node.name,node.parameters,type)
         except SemanticError as ex:
             self.errors.append(ex.text)
+
+    def update_globals_function(self):
+        for func in self.context.func.values():
+            
+            if func.name in ['sin','cos','tan','log','sqrt','exp','rand','print']:
+                continue
+            try:
+                func.return_type=self.context.get_type(func.return_type)
+            except SemanticError as ex:
+                func.return_type=ErrorType()
+                self.errors.append(ex.text)
+            for param in func.params:
+                try:
+                    param.type=self.context.get_type(param.type)
+                except SemanticError as ex:
+                    param.type=ErrorType()
+                    self.errors.append(ex.text)
