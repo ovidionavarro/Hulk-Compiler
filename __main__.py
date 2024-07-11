@@ -8,6 +8,7 @@ from src.grammar.grammar import *
 from src.cmp.evaluation import evaluate_reverse_parse
 from src.semantic_checker.visitor_print import *
 from src.semantic_checker.type_collector import *
+from src.semantic_checker.checker import TypeChecker
 import dill
 
 
@@ -88,10 +89,17 @@ if __name__ == "__main__":
         builder.visit(ast)
         builder.update_globals_function()
         print(context)
-        print('Errors:', builder.errors)
-
-
-
+        errors=builder.errors
+        print('Errors:', errors)
+    # Print Tree
+        print(builder.dict_type())
+        # tree=builder.tree_type()
+        # builder.print_tree(tree)
+    #Checker
+        checker=TypeChecker(context,errors)
+        scope=checker.visit(ast)
+        print('Errors',errors)
+        
     except FileNotFoundError:
         print(f"Error: El archivo '{filename}' no fue encontrado.")
     except Exception as e:
