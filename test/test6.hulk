@@ -1,0 +1,3 @@
+
+function trr(x:String,m)  =>2+3+3+2;
+function trrw(x:String) :Object =>x;
