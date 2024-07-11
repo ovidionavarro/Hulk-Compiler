@@ -3,34 +3,34 @@ class ObjectType(Type):
     def __init__(self,name:str='Object'):
         super().__init__(name)
 
-    def __eq__(self, other: object):
-        return other.name==self.name or isinstance(other,NumType) or isinstance(other,StringType) or isinstance(other,BoolType) or isinstance(other,ObjectType)
+    # def __eq__(self, other: object):
+    #     return other.name==self.name or isinstance(other,NumType) or isinstance(other,StringType) or isinstance(other,BoolType) or isinstance(other,ObjectType)
     
 class NoneType(Type):
-    def __init__(self):
-        super().__init__('None')
+    def __init__(self,name:str='None'):
+        super().__init__(name)
 
 
 class NumType(ObjectType):
     def __init__(self):
         super().__init__('Number')
-    def __eq__(self, other: object):
-        return other.name == self.name or isinstance(other, NumType) or isinstance(other, ObjectType)
+    # def __eq__(self, other: object):
+    #     return other.name == self.name or isinstance(other, NumType) or isinstance(other, ObjectType)
         
 
 class StringType(ObjectType):
     def __init__(self):
         super().__init__('String')
 
-    def __eq__(self, other: object):
-        return other.name == self.name or isinstance(other, StringType) or isinstance(other, ObjectType)
+    # def __eq__(self, other: object):
+    #     return other.name == self.name or isinstance(other, StringType) or isinstance(other, ObjectType)
         
 class BoolType(ObjectType):
     def __init__(self):
-        super().__init__('Bool')
+        super().__init__('Boolean')
 
-    def __eq__(self, other):
-        return other.name == self.name or isinstance(other, BoolType) or isinstance(other, ObjectType)
+    # def __eq__(self, other):
+    #     return other.name == self.name or isinstance(other, BoolType) or isinstance(other, ObjectType)
 
 class ErrorType(Type):    
     def __init__(self):
@@ -42,7 +42,7 @@ class ErrorType(Type):
     def bypass(self):
         return True
 
-    def __eq__(self, other):
-        return isinstance(other, Type)
+    # def __eq__(self, other):
+    #     return isinstance(other, Type)
 
 

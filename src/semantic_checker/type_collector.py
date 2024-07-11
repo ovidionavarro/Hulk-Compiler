@@ -43,11 +43,11 @@ class TypeCollector(object):
         self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],'Number')
         self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],'Number')
         self.context.func['tan']=Func('tan',[ParameterNode('angle','Number')],'Number')
-        self.context.func['print']=Func('print',[ParameterNode('value','Object')],'Boolean')
+        self.context.func['print']=Func('print',[ParameterNode('value','Object')],'None')
         self.context.func['log']=Func('log',[ParameterNode('base','Number'),ParameterNode('value','Number')],'Number')
         self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],'Number')
         self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],'Number')
-        self.context.func['rand']=Func('rand',[],'None')
+        self.context.func['rand']=Func('rand',[],'Number')
         self.context.create_protocol('iterable')
         self.context.protocol['iterable'].define_method('next',[],BoolType())
         self.context.protocol['iterable'].define_method('current',[],ObjectType())
@@ -126,6 +126,17 @@ class TypeBuilder:
             if check_parents(self.current_type.name,self.current_type.parent):
                 error= SemanticError("Cyclic inheritance is not allowed.")
                 self.errors.append(error.text)
+        for param in node.constructor:
+            try:
+                param_type=self.context.get_type(param.type)
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+                param_type=ErrorType()
+            try:
+                self.current_type.define_param(param.name,param_type)
+            except SemanticError as ex:
+                self.errors.append(ex)
+
         for corp in node.corpus:
             self.visit(corp)
         
@@ -230,3 +241,72 @@ class TypeBuilder:
                 except SemanticError as ex:
                     param.type=ErrorType()
                     self.errors.append(ex.text)
+    
+    def tree_type(self):
+        types=[]
+        del self.context.types['None']
+        
+        for typex in self.context.types.values():
+            if typex.name in ['Object','Number','String','Boolean','<error>', 'None']:
+                continue
+            types.append(typex)
+        print(types)
+        root=NodeType(ObjectType())
+        for type_ in types:
+            print(type_)
+            if type_.parent:
+                continue
+            node=NodeType(type_)
+            types.remove(type_)
+            root.add_children(node)
+        while len(types)>0:
+            for node in root.children:
+                for type_ in types:
+                    if type_.parent.name==node.type.name:
+                        child=NodeType(type_)
+                        node.add_children(child)
+                        types.remove(type_)
+                        break
+        self.context.types['None']=NoneType() 
+        return root
+    def print_tree(self,root):
+        queue = [root]  # Inicializa la cola con el nodo raíz
+        while queue:
+            current_node = queue.pop(0)  # Sacar el primer nodo de la cola
+            print(current_node)  # Procesar el nodo actual
+            for child in current_node.children:  # Añadir hijos a la cola
+                queue.append(child)
+    def dict_type(self):
+        dict_types={}
+        list_name=[]
+        for type_ in self.context.types.values():
+            if not type_.parent:
+                if type_.name=='Object':
+                    continue
+                current_type=self.context.get_type(type_.name)
+                current_type.set_parent(ObjectType())
+
+            list_name.append(type_.name)
+        dict_types['Object']=[]
+        for type in list_name:
+            dict_types[type]=[]
+
+        while len(list_name)>0:
+            name_type=list_name.pop(0)
+            current_type=self.context.get_type(name_type)
+            for key in dict_types.keys():
+                if(key==current_type.parent.name):
+                    dict_types[key].append(current_type.name)
+
+        return dict_types
+        
+class NodeType:
+    def __init__(self,type):
+        self.type=type
+        self.children=[]
+
+    def add_children(self,child):
+        self.children.append(child)     
+
+    def __str__(self):
+        return self.type
