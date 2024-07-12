@@ -95,9 +95,23 @@ class TypeChecker:
 
     @visitor.when(OrAndExpression)
     def visit(self,node:OrAndExpression,scope):
-        self
-        
+        self.visit(node.left,scope)
+        self.visit(node.right,scope)
+        if(node.left.type_value!=BoolType() or node.right.type_value!=BoolType()):
+            self.errors.append(INVALID_OPERATION % (node.operation,node.right.type_value,node.left.type_value))
+            node.type_value=self.context.get_type('<error>')
+        else:
+            node.type_value=self.context.get_type('Boolean')
 
+    @visitor.when(ComparationExpression)
+    def visit(self,node:ComparationExpression,scope):
+        self.visit(node.left,scope)
+        self.visit(node.right,scope)
+        if (not node.left.type_value.conforms_to(node.right.type_value) and not node.right.type_value.conforms_to(node.left.type_value) ):
+            self.errors.append(INVALID_OPERATION % (node.operation,node.right.type_value,node.left.type_value))
+            node.type_value=self.context.get_type('<error>')
+        else:
+            node.type_value=self.context.get_type('Boolean')
 
     @visitor.when(VariableNode)
     def visit(self, node:VariableNode,scope:Scope):
