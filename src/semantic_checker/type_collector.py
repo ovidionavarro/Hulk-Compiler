@@ -273,7 +273,7 @@ class TypeBuilder:
         queue = [root]  # Inicializa la cola con el nodo raíz
         while queue:
             current_node = queue.pop(0)  # Sacar el primer nodo de la cola
-            print(current_node)  # Procesar el nodo actual
+            # print(current_node)  # Procesar el nodo actual
             for child in current_node.children:  # Añadir hijos a la cola
                 queue.append(child)
     def dict_type(self):

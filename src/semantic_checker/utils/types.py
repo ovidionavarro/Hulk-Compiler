@@ -36,11 +36,11 @@ class ErrorType(Type):
     def __init__(self):
         super().__init__('<error>')
 
-    def conforms_to(self, other):
-        return True
+    # def conforms_to(self, other):
+    #     return True
 
-    def bypass(self):
-        return True
+    # def bypass(self):
+    #     return True
 
     # def __eq__(self, other):
     #     return isinstance(other, Type)

@@ -1,3 +1,5 @@
-
-function trr(x:String,m)  =>2+3+3+2;
-function trrw(x) :String =>true==2+true;
+function trr1(x:String,m:Object):Boolean  =>true==(true | true);
+function trr(x:String,m):Boolean  =>3==4&!true;
+function trr2(x:Boolean,y):String  =>2@@2;
+trr2(trr("w",3),"2");
+print(22);

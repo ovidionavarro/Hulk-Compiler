@@ -124,7 +124,7 @@ class Type:
         if other==self and self.name=='Object':
             return True
         
-        return other.bypass() or self == other or self.parent is not None and self.parent.conforms_to(other)
+        return self == other or self.parent is not None and self.parent.conforms_to(other)
       
 
 

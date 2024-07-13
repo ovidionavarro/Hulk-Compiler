@@ -4,6 +4,7 @@ from src.semantic_checker.ast import *
 from src.semantic_checker.utils.types import *
 
 #errors
+NUMBER_ARGUMENT='Method "%s" have "%s" arguments'
 WRONG_SIGNATURE = 'Method "%s" already defined in "%s" with a different signature.'
 SELF_IS_READONLY = 'Variable "self" is read-only.'
 LOCAL_ALREADY_DEFINED = 'Variable "%s" is already defined in method "%s".'
@@ -58,29 +59,33 @@ class TypeChecker:
     def visit(self,node:TypeAttributeNode,scope):
         self.visit(node.value,scope)
         var_type=self.context.get_type(node.var.type)
+        print()
         if not var_type.conforms_to(node.value.type_value):
             self.errors.append(INCOMPATIBLE_TYPES % (node.value.type_value,var_type))
 
 #=============CALLNODES================#
-    # @visitor.when(FunctionCallNode)
-    # def visit(self,node:FunctionCallNode,scope):
-    #     print(111111111111111111 )
-    #     function=self.context.func[node.funct]
-    #     if function is not None:
-    #         print(111111111111111111 )
-    #         self.errors.append(VARIABLE_NOT_DEFINED % (node.funct,self.current_type.name))
-    #         return
-    #     if len(node.arguments)!=len(function.params):
-    #         self.errors.append(WRONG_SIGNATURE % (node.function,self.current_type.name))
-    #         return
-    #     for arg, param in zip(node.arguments,function.params):
-    #         self.visit(arg,scope)
-    #         if not arg.type_value.conforms_to(param.type):
-    #             self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param.type))
-    #             return
-    #     node.type_value=function.return_type
+    @visitor.when(FunctionCallNode)
+    def visit(self,node:FunctionCallNode,scope):
 
+        if node.funct in self.context.func.keys():
+            function=self.context.func[node.funct]
+        else:
+            print('no hay na')
+            self.errors.append(VARIABLE_NOT_DEFINED % (node.funct,'here'))
+            node.type_value=self.context.get_type('<error>')
+            return
+        if len(node.arguments)!=len(function.params):
+            self.errors.append(NUMBER_ARGUMENT % (node.funct,len(function.params)))
+            return
+        for arg, param in zip(node.arguments,function.params):
+            self.visit(arg,scope)
+            if not arg.type_value.conforms_to(param.type):
+                self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param.type))
+                node.type_value=self.context.get_type('<error>')
+                return
+        node.type_value=function.return_type
 
+#===========Operations================#
 
     @visitor.when(AritmethicExpression)
     def visit(self,node:AritmethicExpression,scope):
@@ -113,6 +118,33 @@ class TypeChecker:
         else:
             node.type_value=self.context.get_type('Boolean')
 
+    @visitor.when(NotExpression)
+    def visit(self,node:NotExpression,scope):
+        self.visit(node.expression,scope)
+        if(node.expression.type_value!=BoolType()):
+            self.errors.append(INVALID_OPERATION % ('!',node.expression.type_value,BoolType()))
+            node.type_value=self.context.get_type('<error>')
+        else:
+            node.type_value=self.context.get_type('Boolean')
+
+    @visitor.when(StringConcatenationNode)
+    def visit(self,node:StringConcatenationNode,scope):
+        self.visit(node.left,scope)
+        self.visit(node.right,scope)
+
+        type_num=self.context.get_type('Number')
+        type_str=self.context.get_type('String')
+        
+        if(not node.left.type_value in[type_num,type_str] or not node.right.type_value in[type_num,type_str]):
+            op="@"
+            if node.double:
+                op="@@"
+            self.errors.append(INVALID_OPERATION % (op,node.left.type_value,node.right.type_value))
+            node.type_value=self.context.get_type('<error>')
+        else:
+            node.type_value=self.context.get_type('String')
+
+
     @visitor.when(VariableNode)
     def visit(self, node:VariableNode,scope:Scope):
         if scope.is_defined(node.name):
@@ -121,6 +153,7 @@ class TypeChecker:
         else:
             self.errors.append(VARIABLE_NOT_DEFINED%(node.name,'Here'))
             node.type_value=self.context.get_type('<error>')
+    
 
     ###basic_type
     @visitor.when(NumberNode)
