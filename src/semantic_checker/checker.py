@@ -99,6 +99,24 @@ class TypeChecker:
                 node.type_value=self.context.get_type('<error>')
                 return
         node.type_value=function.return_type
+    
+    @visitor.when(ExpressionBlockNode)
+    def visit(self,node:ExpressionBlockNode,scope):
+        for exp in node.expressions:
+            self.visit(exp,scope)
+            node.expressions=exp.type_value
+
+    @visitor.when(WhileNode)
+    def visit(self,node:WhileNode,scope):
+        self.visit(node.condition,scope)
+        self.visit(node.expression,scope)
+        node.type_value=node.expression.type_value
+    @visitor.when(ForNode)
+    def visit(self,node:ForNode,scope):
+        ##meter el name en el scope con el tipo de valor del collection
+        self.visit(node.collection,scope)
+        self.visit(node.expression,scope)
+        node.type_value=node.expression.type_value
 
 #===========Operations================#
 
