@@ -3,3 +3,4 @@ function trr(x:String,m):Boolean  =>3==4&!true;
 function trr2(x:Boolean,y):String  =>2@@2;
 trr2(trr("w",3),"2");
 print(22);
+let a:Boolean = 42 in print(a);

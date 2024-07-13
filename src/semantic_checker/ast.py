@@ -63,7 +63,7 @@ class LetNode(ExpressionNode):
         self.vars=variable_names
         self.values=variable_values
         self.expression=expression
-        self.value_type='Object'
+        self.type_value='Object'
 class IfElseExpression(ExpressionNode):
     def __init__(self,condition:List[ExpressionNode],expressions:List[ExpressionNode]):
         self.condition=condition

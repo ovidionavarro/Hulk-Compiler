@@ -64,6 +64,21 @@ class TypeChecker:
             self.errors.append(INCOMPATIBLE_TYPES % (node.value.type_value,var_type))
 
 #=============CALLNODES================#
+    @visitor.when(LetNode)
+    def visit(self,node:LetNode,scope):
+        for var_param,var_value in zip(node.vars,node.values):
+            var_param_type=self.context.get_type(var_param.type)
+            self.visit(var_value,scope)
+            if not var_value.type_value.conforms_to(var_param_type):
+                self.errors.append(INCOMPATIBLE_TYPES % (var_value.type_value,var_param_type))
+                node.type_value=self.context.get_type('<error>')
+                return
+            else:
+                scope.define_variable(var_param.name,var_value.type_value)
+        self.visit(node.expression,scope)
+        node.type_value=node.expression.type_value
+
+
     @visitor.when(FunctionCallNode)
     def visit(self,node:FunctionCallNode,scope):
 
