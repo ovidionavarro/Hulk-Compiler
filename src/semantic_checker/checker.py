@@ -105,6 +105,47 @@ class TypeChecker:
         for exp in node.expressions:
             self.visit(exp,scope)
             node.expressions=exp.type_value
+    @visitor.when(IfElseExpression)
+    def visit(self,node:IfElseExpression,scope):
+        list_type=[]
+        for exp in node.condition:
+            self.visit(exp,scope)
+            if exp.type_value!=BoolType():
+                self.errors.append(INCOMPATIBLE_TYPES % (exp.type_value,BoolType()))
+                node.type_value=self.context.get_type('<error>')
+        for cas in node.cases:
+            self.visit(cas,scope)
+            list_type.append(cas.type_value)
+        print(list_type)
+        node.type_value=self.parent_nearby(list_type)
+        print(node.type_value)
+
+    def parent_nearby(self,list_type):
+        for typ1 in list_type:
+            temp=True
+            for typ2 in list_type:
+                if not typ2.conforms_to(typ1):
+                    temp=False
+                    break
+            if temp:
+                return typ1
+        x=list_type[0]
+
+        while True:
+            parent=x.parent
+            if(parent.name=='Object'):
+                return parent
+            for typ in list_type:
+                temp=True
+                if not typ.conforms_to(parent):
+                    temp=False
+                    x=parent
+                    break
+            if temp:
+                return parent
+            
+
+
 
     @visitor.when(WhileNode)
     def visit(self,node:WhileNode,scope):
@@ -113,6 +154,7 @@ class TypeChecker:
         node.type_value=node.expression.type_value
     @visitor.when(ForNode)
     def visit(self,node:ForNode,scope):
+        ##la coolection tiene k ser tipo iterable
         ##meter el name en el scope con el tipo de valor del collection
         self.visit(node.collection,scope)
         self.visit(node.expression,scope)

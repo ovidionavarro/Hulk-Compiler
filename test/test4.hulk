@@ -1,4 +1,7 @@
-let pt = new Point(3,4) in
-    print("x: " @ pt.getX() @ "; y: " @ pt.getY());
-
-
+let a = 42 in let mod =3 in
+    print(
+        if (mod == 0) "Magic"
+        elif (2==3) "Woke"
+        elif (2==1) "dasd"
+        else "Dumb"
+    );
