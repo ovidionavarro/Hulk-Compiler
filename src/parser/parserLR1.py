@@ -138,27 +138,36 @@ class ShiftReduceParser:
             # Your code here!!! (Shift case)
             match action:
                 case self.SHIFT:
-                    operations.append((self.SHIFT))
-                    stack.append(lookahead)
-                    stack.append(tag)
-                    cursor += 1
+                    try:
+                        operations.append((self.SHIFT))
+                        stack.append(lookahead)
+                        stack.append(tag)
+                        cursor += 1
+                    except KeyError as ex:
+                        print(222222222222222)
+                        print(ex)
                 # Your code here!!! (Reduce case)
                 case self.REDUCE:
-                    operations.append((self.REDUCE))
-                    production = self.G.Productions[tag]
-                    X, beta = production
-                    for i in range(2 * len(beta)):
-                        stack.pop()
-                    l = stack[-1]
-                    stack.append(X.Name)
-                    stack.append(self.goto[l, X])
-                    output.append(production)
+                    try:
+                        operations.append((self.REDUCE))
+                        production = self.G.Productions[tag]
+                        X, beta = production
+                        for i in range(2 * len(beta)):
+                            stack.pop()
+                        l = stack[-1]
+                        stack.append(X.Name)
+                        stack.append(self.goto[l, X])
+                        output.append(production)
+                    except KeyError as ex:
+                        print(3333333333333333)
+                        print(ex)
                 # Your code here!!! (OK case)
                 case self.OK:
                     break
                 # Your code here!!! (Invalid case)
                 case _:
-                    raise Exception
+                    print(222222222222222)
+                    return Exception
         if (get_operations):
             return output, operations
         return output
@@ -231,17 +240,16 @@ def table_to_dataframe(table):
 # print(table_to_dataframe(parser.goto))
 
 ###TEST
-# from src.cmp.utils import Token
-# parser = LR1Parser(G, verbose=True)
-# tokens= [
-#     Token('let',let ),
-# Token('a', identifier),
-# Token('=', equal),
-# Token('55', number),
-# Token('==', dequal),
-# Token('55', number),
-# Token('+', plus),
-# Token('55', number),
+from src.grammar.grammar import G
+from src.cmp.utils import Token
+parser = LR1Parser(G, verbose=True)
+tokens= [
+Token('55', number),
+Token(';',semicolon),
+Token('$', G.EOF),
+]
+parse, operations = parser([t.token_type for t in tokens],get_operations=True)
+print(operations)
 #
 # Token('|', or_),
 # Token('55', number),
@@ -303,9 +311,7 @@ def table_to_dataframe(table):
 #     Token('$', G.EOF),
 # ]
 
-# parse, operations = parser([t.token_type for t in tokens],get_operations=True)
 
 # assert str(derivation) == '[A -> int, A -> int + A, A -> int, A -> int + A, E -> A = A]'
 # derivation,operations = parser([number,minus,number])
-# print(operations)
 # derivation
