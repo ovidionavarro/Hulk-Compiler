@@ -40,6 +40,7 @@ class TypeCollector(object):
         self.context.types['None']=NoneType()   
         self.context.types['Object']=ObjectType()   
         self.context.types['<error>']=ErrorType()
+
         self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],'Number')
         self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],'Number')
         self.context.func['tan']=Func('tan',[ParameterNode('angle','Number')],'Number')
@@ -48,6 +49,8 @@ class TypeCollector(object):
         self.context.func['sqrt']=Func('sqrt',[ParameterNode('value','Number')],'Number')
         self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],'Number')
         self.context.func['rand']=Func('rand',[],'Number')
+        self.context.func['base']=Func('base',[],'Object')
+
         self.context.create_protocol('iterable')
         self.context.protocol['iterable'].define_method('next',[],BoolType())
         self.context.protocol['iterable'].define_method('current',[],ObjectType())
