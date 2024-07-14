@@ -9,4 +9,4 @@ type Knight inherits Person {
 }
 
 let pt = new Person("sd","sd") in
-    print(pt.name(3));
+    print(pt.name("exd"));

@@ -65,41 +65,45 @@ if __name__ == "__main__":
         print(tokens)
     #PARSER
         print('Parseando')
-        parse,operations=parser([t.token_type for t in tokens])
-        print(tokens)
-    # AST
-        ast=evaluate_reverse_parse(parse,operations,tokens)
-        print(ast)
-        formater=PrintVisitor()
-        print(formater.visit(ast))
-    #Type Collector
-        collector = TypeCollector()
-        collector.visit(ast)
+        parse,operations,err=parser([t.token_type for t in tokens])
+        if(len(err)>0):
+            tok=tokens[err[0]]
+            ret_text=f'Error al parsear token {tok.lex} col:{tok.col} fil:{tok.fil}'
+            print(ret_text)
+        else:
 
-        context = collector.context
+        # AST
+            ast=evaluate_reverse_parse(parse,operations,tokens)
+            print(ast)
+            formater=PrintVisitor()
+            print(formater.visit(ast))
+        #Type Collector
+            collector = TypeCollector()
+            collector.visit(ast)
 
-        
-        print('Context:')
-        print(context)
-        print('Errors:', collector.errors)
-    # Type_Builder
-        print('\n Type Builder:\n')
-
-        builder = TypeBuilder(context, collector.errors)
-        builder.visit(ast)
-        builder.update_globals_function()
-        print(context)
-        errors=builder.errors
-        print('Errors:', errors)
-    # Print Tree
-        print(builder.dict_type())
-        # tree=builder.tree_type()
-        # builder.print_tree(tree)
-    #Checker
-        checker=TypeChecker(context,errors)
-        scope=checker.visit(ast)
-        print('Errors',errors)
-        
+            context = collector.context
+            
+            print('Context:')
+            print(context)
+            print('Errors:', collector.errors)
+        # Type_Builder
+            print('\n Type Builder:\n')
+  
+            builder = TypeBuilder(context, collector.errors)
+            builder.visit(ast)
+            builder.update_globals_function()
+            print(context)
+            errors=builder.errors
+            print('Errors:', errors)
+        # Print Tree
+            print(builder.dict_type())
+            # tree=builder.tree_type()
+            # builder.print_tree(tree)
+        #Checker
+            checker=TypeChecker(context,errors)
+            scope=checker.visit(ast)
+            print('Errors',errors)
+            
     except FileNotFoundError:
         print(f"Error: El archivo '{filename}' no fue encontrado.")
     except Exception as e:

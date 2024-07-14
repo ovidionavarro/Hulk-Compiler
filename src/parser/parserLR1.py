@@ -123,6 +123,7 @@ class ShiftReduceParser:
         cursor = 0
         output = []
         operations = []
+        error=[]
 
         while True:
             state = stack[-1]
@@ -134,7 +135,12 @@ class ShiftReduceParser:
 
             # Your code here!!! (Detect error)
 
-            action, tag = self.action[state, lookahead]
+            try:
+                action, tag = self.action[state, lookahead]
+            except KeyError as ex:
+                error.append(cursor)
+                break
+
             # Your code here!!! (Shift case)
             match action:
                 case self.SHIFT:
@@ -160,8 +166,8 @@ class ShiftReduceParser:
                 case _:
                     raise Exception
         if (get_operations):
-            return output, operations
-        return output
+            return output, operations,error
+        return output,error
 
 
 class LR1Parser(ShiftReduceParser):

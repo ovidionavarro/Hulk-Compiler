@@ -77,7 +77,7 @@ class Lexer:
         for token in aux:
             if token.lex=='~':
                 count_fil+=1
-                count_col=1
+                count_col=0
             token.fil=count_fil
             token.col=count_col
             count_col+=1

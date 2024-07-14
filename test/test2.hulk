@@ -1,10 +1,8 @@
 type Point(x,y)  {
     x = 0;
-    y = 0;
-
-    getX(asd) => self.x;
-    getY(ew) => self.y:=y;
 }
+3
+3 ;
 
 
 
