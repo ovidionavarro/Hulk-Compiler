@@ -2,11 +2,11 @@ type Person (firstname: String, lastname: String) {
     firstname: String = firstname;
     lastname: String = lastname;
 
-    name() => self.firstname @@ self.lastname;
+    name(a:String) => self.firstname @@ self.lastname;
 }
 type Knight inherits Person {
-    name() => "Sir" @@ "23";
+    name(a:String) => "Sir" @@ "23";
 }
-function trr(x:String,m):Boolean  =>3==4&!true;
-function trr2(x:Boolean,y):String  =>2@@2;
-trr2(trr("w",3),"2");
+
+let pt = new Person("sd","sd") in
+    print(pt.name(3));

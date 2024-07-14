@@ -72,10 +72,8 @@ class TypeChecker:
     @visitor.when(FunctionNode)
     def visit(self,node:FunctionNode,scope):
         aux=False
-        print(1111111111111111111111111111111111111111111111)
         if scope.current_type:
             if scope.current_type.get_method(node.name):
-                print(2222222222222222222222222222222222222222222222)
 
                 aux=True
                 
@@ -84,7 +82,6 @@ class TypeChecker:
             for param_n,param_t in zip(self.current_method.param_names,self.current_method.param_types):
                 if not scope.find_variable(param_n):
                     scope.define_variable(param_n,param_t)
-                    print(3333333333333,param_t)
                 else:
                     self.errors.append(LOCAL_ALREADY_DEFINED % (param_n,self.current_method.name))
                     return    
@@ -107,9 +104,55 @@ class TypeChecker:
         if(not node.corpus.type_value.conforms_to(self.current_method.return_type)):
             self.errors.append(INCOMPATIBLE_TYPES % (self.current_method.return_type,node.corpus.type_value))
            
+    @visitor.when(NewNode)
+    def visit(self,node:NewNode,scope):
+        if self.context.get_type(node.name):
+            node.type_value=self.context.get_type(node.name)
+            if(len(node.arguments)!=len(node.type_value.parameters)):
+                self.errors.append(NUMBER_ARGUMENT % (node.name,len(node.type_value.parameters)))
+                node.type_value=self.context.get_type('<error>')
+                return
+            for arg in node.arguments:
+                self.visit(arg,scope)
+            for arg,param in zip(node.arguments,node.type_value.parameters):
+                if not arg.type_value.conforms_to(param.type):
+                    self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param.type))
+                    node.type_value=self.context.get_type('<error>')
+                    return
 
+        else:
+            self.errors.append(VARIABLE_NOT_DEFINED % (node.type,'here'))
+            node.type_value=self.context.get_type('<error>')
 
 #=============CALLNODES================#
+    @visitor.when(TypeFunctionCallNode)
+    def visit(self,node:TypeFunctionCallNode,scope):
+        if scope.find_variable(node.class_.name):
+            var=scope.find_variable(node.class_.name)
+            type_=var.type
+            if type_.get_method(node.funct):
+                function=type_.get_method(node.funct)
+                if len(node.arguments)!=len(function.param_names):
+                    self.errors.append(NUMBER_ARGUMENT % (node.funct,len(function.param_names)))
+                    node.type_value=self.context.get_type('<error>')
+
+                    return
+                for arg, param in zip(node.arguments,function.param_types):
+                    self.visit(arg,scope)
+                    if not arg.type_value.conforms_to(param):
+                        self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param))
+                        node.type_value=self.context.get_type('<error>')
+                        return
+                node.type_value=function.return_type
+            else:
+                self.errors.append(VARIABLE_NOT_DEFINED % (node.funct,type_.name))
+                node.type_value=self.context.get_type('<error>')
+
+        else:
+            self.errors.append(VARIABLE_NOT_DEFINED % (node.class_.name,'here'))
+            node.type_value=self.context.get_type('<error>')
+
+
     @visitor.when(LetNode)
     def visit(self,node:LetNode,scope):
         for var_param,var_value in zip(node.vars,node.values):
