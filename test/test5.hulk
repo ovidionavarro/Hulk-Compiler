@@ -7,6 +7,6 @@ type Person (firstname: String, lastname: String) {
 type Knight inherits Person {
     name() => "Sir" @@ "23";
 }
-
+function trr(x:String,m):Boolean  =>3==4&!true;
 function trr2(x:Boolean,y):String  =>2@@2;
 trr2(trr("w",3),"2");

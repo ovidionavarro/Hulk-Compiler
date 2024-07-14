@@ -32,7 +32,7 @@ class TypeChecker:
 #=============Typos================#    
     @visitor.when(TypeNode)
     def visit(self,node:TypeNode,scope):
-        self.current_type=self.context.get_type(node.name)
+        scope.current_type=self.context.get_type(node.name)
         for param in node.constructor:
             param_type=self.context.get_type(param.type)
             scope.define_variable(param.name,param_type)
@@ -49,10 +49,10 @@ class TypeChecker:
 
     @visitor.when(SelfVaraiableNode)
     def visit(self,node:SelfVaraiableNode,scope):
-        if self.current_type:
+        if scope.current_type:
             try:
-                if self.current_type.get_attribute(node.name):
-                    node.type_value=self.current_type.get_attribute(node.name).type
+                if scope.current_type.get_attribute(node.name):
+                    node.type_value=scope.current_type.get_attribute(node.name).type
                     return
             except SemanticError as ex:
                 self.errors.append(ex.text)
@@ -73,14 +73,14 @@ class TypeChecker:
     def visit(self,node:FunctionNode,scope):
         aux=False
         print(1111111111111111111111111111111111111111111111)
-        if self.current_type:
-            if self.current_type.get_method(node.name):
+        if scope.current_type:
+            if scope.current_type.get_method(node.name):
                 print(2222222222222222222222222222222222222222222222)
 
                 aux=True
                 
         if aux:
-            self.current_method=self.current_type.get_method(node.name)
+            self.current_method=scope.current_type.get_method(node.name)
             for param_n,param_t in zip(self.current_method.param_names,self.current_method.param_types):
                 if not scope.find_variable(param_n):
                     scope.define_variable(param_n,param_t)
