@@ -218,6 +218,7 @@ class Scope:
         self.parent = parent
         self.children = []
         self.index = 0 if parent is None else len(parent)
+        self.current_type=None
 
     def __len__(self):
         return len(self.locals)

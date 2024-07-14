@@ -39,9 +39,63 @@ class TypeChecker:
 
         for corp in node.corpus:
             self.visit(corp,scope)
-    
+
+    @visitor.when(TypeAttributeNode)
+    def visit(self,node:TypeAttributeNode,scope):
+        self.visit(node.value,scope)
+        var_type=self.context.get_type(node.var.type)
+        if not node.value.type_value.conforms_to(var_type):
+            self.errors.append(INCOMPATIBLE_TYPES % (node.value.type_value,var_type))
+
+    @visitor.when(SelfVaraiableNode)
+    def visit(self,node:SelfVaraiableNode,scope):
+        if self.current_type:
+            try:
+                if self.current_type.get_attribute(node.name):
+                    node.type_value=self.current_type.get_attribute(node.name).type
+                    return
+            except SemanticError as ex:
+                self.errors.append(ex.text)
+        else:
+            self.errors.append('Current type not exist')
+
+    @visitor.when(SelfDesctructiveExpression)
+    def visit(self,node:SelfDesctructiveExpression,scope):
+        try:
+            self.visit(node.var,scope)
+            self.visit(node.expression,scope)
+            node.var.type_value=node.expression.type_value
+        except SemanticError as ex:
+            self.errors.append(ex.text)
+            node.var.type_value=self.context.get_type('<error>')
+
     @visitor.when(FunctionNode)
     def visit(self,node:FunctionNode,scope):
+        aux=False
+        print(1111111111111111111111111111111111111111111111)
+        if self.current_type:
+            if self.current_type.get_method(node.name):
+                print(2222222222222222222222222222222222222222222222)
+
+                aux=True
+                
+        if aux:
+            self.current_method=self.current_type.get_method(node.name)
+            for param_n,param_t in zip(self.current_method.param_names,self.current_method.param_types):
+                if not scope.find_variable(param_n):
+                    scope.define_variable(param_n,param_t)
+                    print(3333333333333,param_t)
+                else:
+                    self.errors.append(LOCAL_ALREADY_DEFINED % (param_n,self.current_method.name))
+                    return    
+            self.visit(node.corpus,scope)
+            for param in self.current_method.param_names:
+                x=scope.find_variable(param)
+                index=scope.locals.index(x)
+                del scope.locals[index]
+            node.type_value=node.corpus.type_value
+            return
+
 
         self.current_method=self.context.func[node.name]
         # print(self.current_method.return_type)
@@ -54,14 +108,6 @@ class TypeChecker:
             self.errors.append(INCOMPATIBLE_TYPES % (self.current_method.return_type,node.corpus.type_value))
            
 
-
-    @visitor.when(TypeAttributeNode)
-    def visit(self,node:TypeAttributeNode,scope):
-        self.visit(node.value,scope)
-        var_type=self.context.get_type(node.var.type)
-        print()
-        if not var_type.conforms_to(node.value.type_value):
-            self.errors.append(INCOMPATIBLE_TYPES % (node.value.type_value,var_type))
 
 #=============CALLNODES================#
     @visitor.when(LetNode)
@@ -116,33 +162,9 @@ class TypeChecker:
         for cas in node.cases:
             self.visit(cas,scope)
             list_type.append(cas.type_value)
-        print(list_type)
         node.type_value=self.parent_nearby(list_type)
         print(node.type_value)
 
-    def parent_nearby(self,list_type):
-        for typ1 in list_type:
-            temp=True
-            for typ2 in list_type:
-                if not typ2.conforms_to(typ1):
-                    temp=False
-                    break
-            if temp:
-                return typ1
-        x=list_type[0]
-
-        while True:
-            parent=x.parent
-            if(parent.name=='Object'):
-                return parent
-            for typ in list_type:
-                temp=True
-                if not typ.conforms_to(parent):
-                    temp=False
-                    x=parent
-                    break
-            if temp:
-                return parent
             
 
 
@@ -161,7 +183,18 @@ class TypeChecker:
         node.type_value=node.expression.type_value
 
 #===========Operations================#
-
+    @visitor.when(DesctructiveExpression)
+    def visit(self,node:DesctructiveExpression,scope):
+        if not scope.is_defined(node.name):
+            self.errors.append(VARIABLE_NOT_DEFINED % (node.name,'Here'))
+            node.type_value=self.context.get_type('<error>')
+            return
+        self.visit(node.expression,scope)
+        node.type_value=node.expression.type_value
+        var=scope.find_variable(node.name)
+        var.type=node.expression.type_value
+        var2=scope.find_variable(node.name)
+        print(var2.type)
     @visitor.when(AritmethicExpression)
     def visit(self,node:AritmethicExpression,scope):
         self.visit(node.left,scope)
@@ -242,3 +275,28 @@ class TypeChecker:
     @visitor.when(BooleanNode)
     def visit(self,node:BooleanNode,scope):
         node.type_value=self.context.get_type('Boolean')
+
+    def parent_nearby(self,list_type):
+        for typ1 in list_type:
+            temp=True
+            for typ2 in list_type:
+                if not typ2.conforms_to(typ1):
+                    temp=False
+                    break
+            if temp:
+                return typ1
+        x=list_type[0]
+
+        while True:
+            parent=x.parent
+            if(parent.name=='Object'):
+                return parent
+            for typ in list_type:
+                temp=True
+                if not typ.conforms_to(parent):
+                    temp=False
+                    x=parent
+                    break
+            if temp:
+                return parent
+    

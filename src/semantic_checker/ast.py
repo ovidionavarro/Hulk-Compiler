@@ -83,7 +83,7 @@ class SelfDesctructiveExpression(ExpressionNode):
     def __init__(self,var:SelfVaraiableNode,expression:ExpressionNode):
         self.var=var
         self.expression=expression
-        self.value='Object'
+        self.type_value='Object'
 class WhileNode(ExpressionNode):
     def __init__(self,condition:ExpressionNode,expression:ExpressionNode):
         self.condition=condition

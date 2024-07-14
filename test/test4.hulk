@@ -5,3 +5,9 @@ let a = 42 in let mod =3 in
         elif (2==1) "dasd"
         else "Dumb"
     );
+
+let a = 0 in {
+    print(a);
+    a := true;
+    print(a);
+}
