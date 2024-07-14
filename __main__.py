@@ -58,7 +58,7 @@ if __name__ == "__main__":
     #obtener ruta completa
         file_path = os.path.join("test", filename)
         text = read_file_as_string(file_path)
-        text = text.replace('\n', '')
+        text = text.replace('\n', '~')
     #TOKENIZAR
         print(f'\n>>> Tokenizando: "{text}"')
         tokens = lexer(text)

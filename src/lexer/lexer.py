@@ -71,8 +71,17 @@ class Lexer:
 
     def __call__(self, text):
         tokens= [Token(lex, ttype) for lex, ttype in self._tokenize(text)]
-        return [token for token in tokens if token.token_type not in ['space']]
-
+        aux= [token for token in tokens if token.token_type not in ['space']]
+        count_col=1
+        count_fil=1
+        for token in aux:
+            if token.lex=='~':
+                count_fil+=1
+                count_col=1
+            token.fil=count_fil
+            token.col=count_col
+            count_col+=1
+        return[token for token in aux if token.token_type not in ['jump']]
 
 
 # lexer=Lexer(symbol_table,'eof')

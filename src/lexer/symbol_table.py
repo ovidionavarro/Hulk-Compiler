@@ -65,6 +65,7 @@ symbol_table=[
     (and_, "&"),
     (or_, "\\|"),
     ('space',"\\ *"),
+    ('jump', "~"),
     # ('list_comprehension', "\|\|"),
     (not_, "!"),
     (modulus, "%"),
