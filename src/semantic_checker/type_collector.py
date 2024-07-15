@@ -41,6 +41,10 @@ class TypeCollector(object):
         self.context.types['Object']=ObjectType()   
         self.context.types['<error>']=ErrorType()
         self.context.types['Any']=AnyType()
+        self.context.types['iterable']=Type('iterable')
+        self.context.types['iterable'].define_method('next',[],[],BoolType())
+        self.context.types['iterable'].define_method('current',[],[],ObjectType())
+
 
         self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],'Number')
         self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],'Number')
