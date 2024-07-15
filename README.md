@@ -37,5 +37,5 @@ cd hulk-compiler
 ```
 
 ```bash
-python main.py test#.py
+python __main__.py test#.py
 ```
