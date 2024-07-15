@@ -2,9 +2,7 @@ protocol Hashable  {
     hash(a:Boolean): Number;
 }
 
-protocol Equatable extends Hashable {
-    equals(other: Object): Boolean;
-}
+
 type Person (firstname, lastname) {
     firstname = firstname;
     lastname = lastname;
@@ -16,4 +14,6 @@ type Knight inherits Person {
 }
 
 function cot(angle:Number): Number => 1 / tan(x);
-function trr(x) => sin(x) / cos(x);
+function trr(x) => true+5
+trr(22);
+let a= new Knight(3,4) in print(a);

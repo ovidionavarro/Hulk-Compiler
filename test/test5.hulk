@@ -2,11 +2,24 @@ type Person (firstname: String, lastname: String) {
     firstname: String = firstname;
     lastname: String = lastname;
 
-    name(a:String) => self.firstname @@ self.lastname;
+    
 }
-type Knight inherits Person {
-    name(a:String) => "Sir" @@ "23";
+function cot(angle:Number): Number => 1 / tan(angle);
+function trr(x) =>x|x;
+trr(true);
+let a = 0 in {
+    print(a);
+    a := 6;
+    print(a);
 }
+type Point {
+    x = 0;
+    y = 0;
 
-let pt = new Person("sd","sd") in
-    print(pt.name("exd"));
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+let a= new Person("3","4") in print(a);

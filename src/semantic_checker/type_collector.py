@@ -40,6 +40,7 @@ class TypeCollector(object):
         self.context.types['None']=NoneType()   
         self.context.types['Object']=ObjectType()   
         self.context.types['<error>']=ErrorType()
+        self.context.types['Any']=AnyType()
 
         self.context.func['sin']=Func('sin',[ParameterNode('angle','Number')],'Number')
         self.context.func['cos']=Func('cos',[ParameterNode('angle','Number')],'Number')
@@ -50,6 +51,7 @@ class TypeCollector(object):
         self.context.func['exp']=Func('exp',[ParameterNode('value','Number')],'Number')
         self.context.func['rand']=Func('rand',[],'Number')
         self.context.func['base']=Func('base',[],'Object')
+
 
         self.context.create_protocol('iterable')
         self.context.protocol['iterable'].define_method('next',[],BoolType())
@@ -147,7 +149,7 @@ class TypeBuilder:
                 error= SemanticError("Using the same method name with different arguments is not allowed.")
                 self.errors.append(error.text)
         
-
+        
     
     @visitor.when(FunctionNode)
     def visit(self,node):

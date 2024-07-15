@@ -47,7 +47,7 @@ def load_src():
 if __name__ == "__main__":
     # Comprueba que se haya pasado un argumento
     if len(sys.argv) != 2:
-        print("Uso: python main.py <nombre_del_archivo>")
+        print("Uso: python __main.py__ <nombre_del_archivo>")
         sys.exit(1)
 
     # Obtiene el nombre del archivo del primer argumento

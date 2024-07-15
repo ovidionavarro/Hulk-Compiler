@@ -44,8 +44,19 @@ class TypeChecker:
     def visit(self,node:TypeAttributeNode,scope):
         self.visit(node.value,scope)
         var_type=self.context.get_type(node.var.type)
+        if var_type==AnyType():
+            print(var_type,4444444444444)
+            node.var.type=node.value.type_value
+            scope.current_type.get_attribute(node.var.name).type=node.value.type_value
+            print(scope.current_type.get_attribute(node.var.name).name,scope.current_type.get_attribute(node.var.name).type)
+            node.type_value=node.value.type_value
+            return
+
+        node.var.type=var_type
+        node.type_value=node.value.type_value
         if not node.value.type_value.conforms_to(var_type):
             self.errors.append(INCOMPATIBLE_TYPES % (node.value.type_value,var_type))
+            node.type_value=self.context.get_type('<error>')
 
     @visitor.when(SelfVaraiableNode)
     def visit(self,node:SelfVaraiableNode,scope):
@@ -53,6 +64,7 @@ class TypeChecker:
             try:
                 if scope.current_type.get_attribute(node.name):
                     node.type_value=scope.current_type.get_attribute(node.name).type
+                    print(55555555,node.type_value)
                     return
             except SemanticError as ex:
                 self.errors.append(ex.text)
@@ -61,10 +73,29 @@ class TypeChecker:
 
     @visitor.when(SelfDesctructiveExpression)
     def visit(self,node:SelfDesctructiveExpression,scope):
+        print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
         try:
             self.visit(node.var,scope)
             self.visit(node.expression,scope)
-            node.var.type_value=node.expression.type_value
+            if(isinstance(node.expression,VariableNode)):
+                if(scope.find_variable(node.expression.name).type==AnyType()):
+                    scope.find_variable(node.expression.name).type=node.var.type_value
+                    node.expression.type_value=node.var.type_value
+                else:
+                    if node.expression.type_value.conforms_to(node.var.type_value):
+                        node.var.type_value=node.expression.type_value
+                    else:
+                        self.errors.append(INCOMPATIBLE_TYPES % (node.var.type_value,node.expression.type_value))
+                        node.var.type_value=self.context.get_type('<error>')
+
+                return
+            print(222222222222222,node.var.type_value,node.expression.type_value)
+            if node.expression.type_value.conforms_to(node.var.type_value):
+                node.var.type_value=node.expression.type_value
+            else:
+                self.errors.append(INCOMPATIBLE_TYPES % (node.var.type_value,node.expression.type_value))
+                node.var.type_value=self.context.get_type('<error>')    
+                return
         except SemanticError as ex:
             self.errors.append(ex.text)
             node.var.type_value=self.context.get_type('<error>')
@@ -79,6 +110,7 @@ class TypeChecker:
                 
         if aux:
             self.current_method=scope.current_type.get_method(node.name)
+
             for param_n,param_t in zip(self.current_method.param_names,self.current_method.param_types):
                 if not scope.find_variable(param_n):
                     scope.define_variable(param_n,param_t)
@@ -86,11 +118,22 @@ class TypeChecker:
                     self.errors.append(LOCAL_ALREADY_DEFINED % (param_n,self.current_method.name))
                     return    
             self.visit(node.corpus,scope)
+            ####redefinir typos de los parametros
+            for param_n , param_t in zip(self.current_method.param_names,self.current_method.param_types):
+                if(param_t==AnyType()):
+                    param_t=scope.find_variable(param_n).type
+
             for param in self.current_method.param_names:
                 x=scope.find_variable(param)
                 index=scope.locals.index(x)
                 del scope.locals[index]
-            node.type_value=node.corpus.type_value
+            if self.current_method.return_type==AnyType():
+                self.current_method.return_type=node.corpus.type_value
+                node.type=node.corpus.type_value
+            else:
+               if not node.corpus.type_value.conforms_to(self.current_method.return_type):
+                    self.errors.append(INCOMPATIBLE_TYPES % (self.current_method.return_type,node.corpus.type_value))
+                    self.current_method.return_type=self.context.get_type('<error>')
             return
 
 
@@ -99,8 +142,14 @@ class TypeChecker:
         for param in self.current_method.params:
             scope.define_variable(param.name,param.type)
         self.visit(node.corpus,scope)
-        print(node.corpus.type_value,'->',self.current_method.return_type)
-        print(node.corpus.type_value.conforms_to(self.current_method.return_type))
+        ####redefinir typos de los parametros
+        for param in self.current_method.params:
+            if(param.type==AnyType()):
+                param.type=scope.find_variable(param.name).type
+
+        if self.current_method.return_type==AnyType():
+            self.current_method.return_type=node.corpus.type_value
+            return
         if(not node.corpus.type_value.conforms_to(self.current_method.return_type)):
             self.errors.append(INCOMPATIBLE_TYPES % (self.current_method.return_type,node.corpus.type_value))
            
@@ -139,7 +188,8 @@ class TypeChecker:
                     return
                 for arg, param in zip(node.arguments,function.param_types):
                     self.visit(arg,scope)
-                    if not arg.type_value.conforms_to(param):
+                    
+                    if not arg.type_value.conforms_to(param) and param!=AnyType():
                         self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param))
                         node.type_value=self.context.get_type('<error>')
                         return
@@ -158,6 +208,8 @@ class TypeChecker:
         for var_param,var_value in zip(node.vars,node.values):
             var_param_type=self.context.get_type(var_param.type)
             self.visit(var_value,scope)
+            if(var_param_type==AnyType()):
+                var_param_type=var_value.type_value
             if not var_value.type_value.conforms_to(var_param_type):
                 self.errors.append(INCOMPATIBLE_TYPES % (var_value.type_value,var_param_type))
                 node.type_value=self.context.get_type('<error>')
@@ -174,7 +226,6 @@ class TypeChecker:
         if node.funct in self.context.func.keys():
             function=self.context.func[node.funct]
         else:
-            print('no hay na')
             self.errors.append(VARIABLE_NOT_DEFINED % (node.funct,'here'))
             node.type_value=self.context.get_type('<error>')
             return
@@ -183,7 +234,11 @@ class TypeChecker:
             return
         for arg, param in zip(node.arguments,function.params):
             self.visit(arg,scope)
-            if not arg.type_value.conforms_to(param.type):
+            if(arg.type_value==AnyType()):
+                arg.type_value=param.type
+            if(param.type==AnyType()):
+                param.type=arg.type_value
+            if not arg.type_value.conforms_to(param.type) :
                 self.errors.append(INCOMPATIBLE_TYPES % (arg.type_value,param.type))
                 node.type_value=self.context.get_type('<error>')
                 return
@@ -193,7 +248,7 @@ class TypeChecker:
     def visit(self,node:ExpressionBlockNode,scope):
         for exp in node.expressions:
             self.visit(exp,scope)
-            node.expressions=exp.type_value
+            node.type_value=exp.type_value
     @visitor.when(IfElseExpression)
     def visit(self,node:IfElseExpression,scope):
         list_type=[]
@@ -208,9 +263,7 @@ class TypeChecker:
         node.type_value=self.parent_nearby(list_type)
         print(node.type_value)
 
-            
-
-
+    
 
     @visitor.when(WhileNode)
     def visit(self,node:WhileNode,scope):
@@ -225,6 +278,25 @@ class TypeChecker:
         self.visit(node.expression,scope)
         node.type_value=node.expression.type_value
 
+    @visitor.when(AsNode)
+    def visit(self,node:AsNode,scope):
+        self.visit(node.expression,scope)
+        if(self.context.get_type(node.type)):
+            node.type_value=self.context.get_type(node.type)
+        else:
+            self.errors.append(f'Type {node.type} not found')
+            node.type_value=self.context.get_type("<error>")
+
+    @visitor.when(IsExpression)
+    def visit(self,node:IsExpression,scope):
+        if(self.context.get_type(node.name)):
+            node.type_value=self.context.get_type("Boolean")
+        else:
+            self.errors.append(f'Type {node.name} not found')
+            node.type_value=self.context.get_type("<error>")
+        
+        
+
 #===========Operations================#
     @visitor.when(DesctructiveExpression)
     def visit(self,node:DesctructiveExpression,scope):
@@ -235,13 +307,30 @@ class TypeChecker:
         self.visit(node.expression,scope)
         node.type_value=node.expression.type_value
         var=scope.find_variable(node.name)
-        var.type=node.expression.type_value
+        if var.type==AnyType():
+            var.type=node.expression.type_value
+        else:
+            if not node.expression.type_value.conforms_to(var.type):
+                self.errors.append(INCOMPATIBLE_TYPES % (node.expression.type_value,var.type))
+                node.type_value=self.context.get_type('<error>')
+        node.type_value=var.type
         var2=scope.find_variable(node.name)
         print(var2.type)
     @visitor.when(AritmethicExpression)
     def visit(self,node:AritmethicExpression,scope):
         self.visit(node.left,scope)
         self.visit(node.right,scope)
+        if(isinstance(node.left,VariableNode)):
+            if(scope.find_variable(node.left.name).type==AnyType()):
+                scope.find_variable(node.left.name).type=self.context.get_type('Number')
+                node.left.type_value=self.context.get_type('Number')
+            else:node.left.type_value=scope.find_variable(node.left.name).type
+
+        if(isinstance(node.right,VariableNode)):
+            if(scope.find_variable(node.right.name).type==AnyType()):
+                scope.find_variable(node.right.name).type=self.context.get_type('Number')
+                node.right.type_value=self.context.get_type('Number')
+            else:node.right.type_value=scope.find_variable(node.right.name).type
         if(node.left.type_value!=NumType() or node.right.type_value!=NumType()):
             self.errors.append(INVALID_OPERATION % (node.operation,node.right.type_value,node.left.type_value))
             node.type_value=self.context.get_type('<error>')
@@ -253,6 +342,20 @@ class TypeChecker:
     def visit(self,node:OrAndExpression,scope):
         self.visit(node.left,scope)
         self.visit(node.right,scope)
+        
+        if(isinstance(node.left,VariableNode)):
+            if(scope.find_variable(node.left.name).type==AnyType()):
+                scope.find_variable(node.left.name).type=self.context.get_type('Boolean')
+                node.left.type_value=self.context.get_type('Boolean')
+            else:node.left.type_value=scope.find_variable(node.left.name).type
+
+        if(isinstance(node.right,VariableNode)):
+            if(scope.find_variable(node.right.name).type==AnyType()):
+                scope.find_variable(node.right.name).type=self.context.get_type('Boolean')
+                node.right.type_value=self.context.get_type('Boolean')
+            else:node.right.type_value=scope.find_variable(node.right.name).type
+        
+
         if(node.left.type_value!=BoolType() or node.right.type_value!=BoolType()):
             self.errors.append(INVALID_OPERATION % (node.operation,node.right.type_value,node.left.type_value))
             node.type_value=self.context.get_type('<error>')
@@ -272,6 +375,14 @@ class TypeChecker:
     @visitor.when(NotExpression)
     def visit(self,node:NotExpression,scope):
         self.visit(node.expression,scope)
+
+        if(isinstance(node.expression,VariableNode)):
+            if(scope.find_variable(node.expression.name).type==AnyType()):
+                scope.find_variable(node.expression.name).type=self.context.get_type('Boolean')
+                node.expression.type_value=self.context.get_type('Boolean')
+            else:node.expression.type_value=scope.find_variable(node.expression.name).type
+
+
         if(node.expression.type_value!=BoolType()):
             self.errors.append(INVALID_OPERATION % ('!',node.expression.type_value,BoolType()))
             node.type_value=self.context.get_type('<error>')
@@ -282,6 +393,19 @@ class TypeChecker:
     def visit(self,node:StringConcatenationNode,scope):
         self.visit(node.left,scope)
         self.visit(node.right,scope)
+
+        if(isinstance(node.left,VariableNode)):
+            if(scope.find_variable(node.left.name).type==AnyType()):
+                scope.find_variable(node.left.name).type=self.context.get_type('String')
+                node.left.type_value=self.context.get_type('String')
+            else:node.left.type_value=scope.find_variable(node.left.name).type
+
+        if(isinstance(node.right,VariableNode)):
+            if(scope.find_variable(node.right.name).type==AnyType()):
+                scope.find_variable(node.right.name).type=self.context.get_type('String')
+                node.right.type_value=self.context.get_type('String')
+            else:node.right.type_value=scope.find_variable(node.right.name).type
+
 
         type_num=self.context.get_type('Number')
         type_str=self.context.get_type('String')
@@ -305,7 +429,6 @@ class TypeChecker:
             self.errors.append(VARIABLE_NOT_DEFINED%(node.name,'Here'))
             node.type_value=self.context.get_type('<error>')
     
-
     ###basic_type
     @visitor.when(NumberNode)
     def visit(self,node:NumberNode,scope):

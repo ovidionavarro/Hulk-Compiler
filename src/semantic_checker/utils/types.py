@@ -5,7 +5,9 @@ class ObjectType(Type):
 
     # def __eq__(self, other: object):
     #     return other.name==self.name or isinstance(other,NumType) or isinstance(other,StringType) or isinstance(other,BoolType) or isinstance(other,ObjectType)
-    
+class AnyType(Type):
+    def __init__(self, name: str='Any'):
+        super().__init__(name)
 class NoneType(Type):
     def __init__(self,name:str='None'):
         super().__init__(name)
