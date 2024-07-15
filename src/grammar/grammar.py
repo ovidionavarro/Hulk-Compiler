@@ -83,9 +83,9 @@ parameter_list %= variable + comma + parameter_list, lambda h,s:[s[1]]+s[3]
 variable %= identifier, lambda h,s:ParameterNode(s[1])
 variable %= identifier + colon + identifier, lambda h,s:ParameterNode(s[1],s[3])
 #
-type_def %= class_block, lambda h,s:([],'Any',[],s[1])
+type_def %= class_block, lambda h,s:([],'Object',[],s[1])
 type_def %= inherits + identifier + class_block, lambda h,s:([],s[2],[],s[3])
-type_def %= lparen + parameter_list + rparen + class_block, lambda h,s:(s[2],'Any',[],s[4])
+type_def %= lparen + parameter_list + rparen + class_block, lambda h,s:(s[2],'Object',[],s[4])
 type_def %= lparen + parameter_list + rparen + inherits + identifier + class_block, lambda h,s:(s[2],s[5],[],s[6])
 type_def %= lparen + parameter_list + rparen + inherits + identifier + lparen + argument_list + rparen + class_block, lambda h,s:(s[2],s[5],s[7],s[9])
 type_def %= inherits + identifier + lparen + argument_list + rparen + class_block,lambda h,s:([],s[2],s[4],s[6])

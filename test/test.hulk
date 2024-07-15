@@ -9,11 +9,8 @@ type Person (firstname, lastname) {
 
     name() => self.firstname @@ self.lastname;
 }
-type Knight inherits Person {
-    name() => "Sir" @@ base();
-}
+
 
 function cot(angle:Number): Number => 1 / tan(x);
-function trr(x) => true+5
+function trr(x) => true+5;
 trr(22);
-let a= new Knight(3,4) in print(a);

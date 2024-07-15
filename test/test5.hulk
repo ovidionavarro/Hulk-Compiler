@@ -23,3 +23,7 @@ type Point {
     setY(y) => self.y := y;
 }
 let a= new Person("3","4") in print(a);
+let a = 10 in while (a >= 0) {
+    print(a);
+    a := a - 1;
+}
