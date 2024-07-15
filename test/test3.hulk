@@ -12,6 +12,13 @@ type Point {
     setX(x) => self.x := x;
     setY(y) => self.y := y;
 }
+function cot(angle:Number): Number => 1 / tan(x);
+function trr(x) => sin(x) / cos(x);
+type Point3 {
+    x = 4;
+    y=5;
+    z = 7;
+}
 let a = 42 in print(a);
 let a = 42 in let mod =3 in
     print(

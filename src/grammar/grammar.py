@@ -48,12 +48,12 @@ destruct, concat = G.Terminals(":= @")
 list_comprehension = G.Terminal("||")
 
 for_, let, if_, else_, elif_ = G.Terminals("for let if else elif")
-while_, function, pi, e, print_ = G.Terminals("while function pi e print")
+while_, function, pi, e = G.Terminals("while function pi e ")
 new, inherits, protocol, type_, in_, range_, extends = G.Terminals("new inherits protocol type in range extends")
 true, false = G.Terminals("true false")
 
-rand = G.Terminal("rand")
-sin, cos, sqrt, exp, log, tan, base = G.Terminals("sin cos sqrt exp log tan base")
+# rand = G.Terminal("rand")
+# cos, sqrt, exp, log, tan, base = G.Terminals("cos sqrt exp log tan base")
 as_, is_ = G.Terminals("as is")
 
 init_ %= program, lambda h,s:s[1]
@@ -69,9 +69,9 @@ simple_program %= protocol_declare, lambda h,s:s[1]
 
 
 
-function_style %= darrow + simple_expression + semicolon,lambda h,s:('Object',s[2])
+function_style %= darrow + simple_expression + semicolon,lambda h,s:('Any',s[2])
 function_style %= colon + identifier + darrow + simple_expression + semicolon, lambda h,s:(s[2],s[4])
-function_style %= lbrace + expression_block + rbrace, lambda h,s:('Object',s[2])
+function_style %= lbrace + expression_block + rbrace, lambda h,s:('Any',s[2])
 function_style %= colon + identifier + lbrace + expression_block + rbrace, lambda h,s:(s[2], s[4])
 #
 parameters %= lparen + rparen, lambda h,s:[]
@@ -207,16 +207,16 @@ high_hierarchy_object %= high_hierarchy_object + as_ + identifier, lambda h,s:As
 function_stack %= identifier + period + identifier + arguments, lambda h,s:TypeFunctionCallNode(VariableNode(s[1]),s[3],s[4])
 function_stack %= function_stack + period + identifier + arguments, lambda h,s:TypeFunctionCallNode(s[1],s[3],s[4])
 function_stack %= identifier + arguments, lambda h,s:FunctionCallNode(s[1],s[2])
-function_stack %= print_ + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('print',[s[3]])
-function_stack %= sin + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('sin',[s[3]])
-function_stack %= cos + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('cos',[s[3]])
-function_stack %= tan + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('tan',[s[3]])
-function_stack %= sqrt + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('sqrt',[s[3]])
-function_stack %= exp + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('exp',[s[3]])
-function_stack %= log + lparen + simple_expression + comma + simple_expression + rparen, lambda h,s:FunctionCallNode('log',[s[3]],[s[5]])
-function_stack %= rand + lparen + rparen, lambda h,s:FunctionCallNode('rand',[])
-function_stack %= range_ + lparen + simple_expression + comma + simple_expression + rparen, lambda h,s:FunctionCallNode('range',[s[3]],[s[5]])
-function_stack %= base + lparen + rparen, lambda h,s:FunctionCallNode('base',[])
+# function_stack %= print_ + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('print',[s[3]])
+# function_stack %= sin + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('sin',[s[3]])
+# function_stack %= cos + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('cos',[s[3]])
+# function_stack %= tan + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('tan',[s[3]])
+# function_stack %= sqrt + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('sqrt',[s[3]])
+# function_stack %= exp + lparen + simple_expression + rparen, lambda h,s:FunctionCallNode('exp',[s[3]])
+# function_stack %= log + lparen + simple_expression + comma + simple_expression + rparen, lambda h,s:FunctionCallNode('log',[s[3]],[s[5]])
+# function_stack %= rand + lparen + rparen, lambda h,s:FunctionCallNode('rand',[])
+# function_stack %= range_ + lparen + simple_expression + comma + simple_expression + rparen, lambda h,s:FunctionCallNode('range',[s[3]],[s[5]])
+# function_stack %= base + lparen + rparen, lambda h,s:FunctionCallNode('base',[])
 function_stack %= identifier + period + identifier, lambda h,s:SelfVaraiableNode(s[1]=='self',s[3])
 function_stack %= lparen + simple_expression + rparen, lambda h,s:s[2]
 function_stack %= number, lambda h,s:NumberNode(float(s[1]))
@@ -240,8 +240,8 @@ explicit_list_ %= simple_expression + comma + explicit_list_, lambda h,s:[s[1]]+
 
 def GetKeywords():
     return [for_, let, if_, else_, elif_, while_, function, pi, e, print_,
-            new, inherits, protocol, type_, in_, range_, true, false, extends, as_,
-            rand, sin, cos, sqrt, exp, log, is_, tan, base]
+            new, inherits, protocol, type_, in_, range_, true, false, extends, as_,is_]
+            # rand, sin, cos, sqrt, exp, log , tan, base]
 
 # from parserLr1 import LR1Parser
 # parse=LR1Parser(G,verbose=True)

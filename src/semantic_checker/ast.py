@@ -9,16 +9,16 @@ class StatementNode(Node):
     pass
 class ExpressionNode(StatementNode):
     def __init__(self):
-        self.type_value='Object'
+        self.type_value='Any'
 class ProgramNode:
     def __init__(self, statements: List[StatementNode]):
         self.statements = statements
 class ParameterNode(Node):
-    def __init__(self,name:str,type:str='Object'):
+    def __init__(self,name:str,type:str='Any'):
         self.name=name
         self.type=type
 class FunctionNode(StatementNode):
-    def __init__(self,name:str,parameters:List[ParameterNode],corpus:ExpressionNode,type:str='Object'):
+    def __init__(self,name:str,parameters:List[ParameterNode],corpus:ExpressionNode,type:str='Any'):
         self.name=name
         self.parameters=parameters
         self.corpus=corpus
@@ -54,7 +54,7 @@ class ProtocolNode(StatementNode):
 class ExpressionBlockNode(ExpressionNode):
     def __init__(self,expressions:List[ExpressionNode]):
         self.expressions=expressions
-        self.type_value='Object'
+        self.type_value='Any'
 
     #LOW PRIORITY
 class LetNode(ExpressionNode):
@@ -63,96 +63,96 @@ class LetNode(ExpressionNode):
         self.vars=variable_names
         self.values=variable_values
         self.expression=expression
-        self.value_type='Object'
+        self.type_value='Any'
 class IfElseExpression(ExpressionNode):
     def __init__(self,condition:List[ExpressionNode],expressions:List[ExpressionNode]):
         self.condition=condition
         self.cases=expressions
-        self.type_value='Object'
+        self.type_value='Any'
 class DesctructiveExpression(ExpressionNode):
     def __init__(self,name:str,expression:ExpressionNode):
         self.name=name
         self.expression=expression
-        self.type_value='Object'
+        self.type_value='Any'
 class SelfVaraiableNode(ExpressionNode):
     def __init__(self,is_self:bool,name:str):
         self.is_self=is_self
         self.name=name
-        self.type_value='Object'
+        self.type_value='Any'
 class SelfDesctructiveExpression(ExpressionNode):
     def __init__(self,var:SelfVaraiableNode,expression:ExpressionNode):
         self.var=var
         self.expression=expression
-        self.value='Object'
+        self.type_value='Any'
 class WhileNode(ExpressionNode):
     def __init__(self,condition:ExpressionNode,expression:ExpressionNode):
         self.condition=condition
         self.expression=expression
-        self.type_value='Object'
+        self.type_value='Any'
 
 class ForNode(ExpressionNode):
     def __init__(self,name:str,collection:ExpressionNode,expression:ExpressionNode):
         self.name=name
         self.collection=collection
         self.expression=expression
-        self.type_value='Object'
+        self.type_value='Any'
 class NewNode(ExpressionNode):
     def __init__(self,name:str,arguments:List[ExpressionNode]):
         self.name=name
         self.arguments=arguments
-        self.type_value='Object'
+        self.type_value='Any'
 
     #HIGH PRIORITY
 
 class NumberNode(ExpressionNode):
     def __init__(self, value):
         self.value = value
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class StringNode(ExpressionNode):
     def __init__(self, value):
         self.value = value
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class BooleanNode(ExpressionNode):
     def __init__(self, value):
         self.value = value
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class VariableNode(ExpressionNode):
     def __init__(self, name: str):
         self.name = name
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 
 class FunctionCallNode(ExpressionNode):
     def __init__(self, name: str, arguments: List[ExpressionNode]):
         self.funct = name
         self.arguments = arguments
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class TypeFunctionCallNode(ExpressionNode):
     def __init__(self, class_calling: ExpressionNode, name: str, arguments: List[ExpressionNode]):
         self.class_ = class_calling
         self.funct = name
         self.arguments = arguments
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 class ListNode(ExpressionNode):
     def __init__(self, expressions: List[ExpressionNode]):
         self.elements = expressions
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 class ImplicitListNode(ExpressionNode):
     def __init__(self, operator: ExpressionNode, iterator: str, collection: ExpressionNode):
         self.operation = operator
         self.iteration = iterator
         self.collection = collection
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class IndexingNode(ExpressionNode):
     def __init__(self, collection: ExpressionNode, index: ExpressionNode):
         self.collection = collection
         self.index = index
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 
 class AsNode(ExpressionNode):
     def __init__(self,left:ExpressionNode,right:str):
@@ -170,31 +170,31 @@ class OrAndExpression(ExpressionNode):
         self.operation=operation
         self.left=left
         self.right=right
-        self.type_value='Object'
+        self.type_value='Boolean'
 class NotExpression(ExpressionNode):
     def __init__(self,expression:ExpressionNode):
         self.expression=expression
-        self.type_value='Object'
+        self.type_value='Any'
 class ComparationExpression(ExpressionNode):
     def __init__(self,operation:str,left:ExpressionNode,right:ExpressionNode=None):
         self.operation = operation
         self.left = left
         self.right = right
-        self.type_value = 'Object'
+        self.type_value = 'Boolean'
 class IsExpression(ExpressionNode):
     def __init__(self,left:ExpressionNode,name:str):
         self.left=left
         self.name=name
-        self.type_value='Object'
+        self.type_value='Boolean'
 class AritmethicExpression(ExpressionNode):
     def __init__(self,operation:str,left:ExpressionNode,right:ExpressionNode):
         self.operation = operation
         self.left = left
         self.right = right
-        self.type_value = 'Object'
+        self.type_value = 'Any'
 class StringConcatenationNode(ExpressionNode):
     def __init__(self,left:ExpressionNode,right:ExpressionNode,double:bool=False):
         self.left = left
         self.right = right
         self.double=double
-        self.type_value = 'Object'
+        self.type_value = 'String'

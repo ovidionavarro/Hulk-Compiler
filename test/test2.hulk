@@ -1,10 +1,8 @@
-let pt = new Point(3,4) in
-    print("x: " @ pt.getX() @ "; y: " @ pt.getY());
+type Point(x,y)  {
+    x = 0;
+}
 
-let a = 42 in
-    if (1) {
-        print(a);
-        print("Even");
-    }
-    else print("Odd");
+
+
+
 

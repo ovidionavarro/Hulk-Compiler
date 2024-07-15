@@ -13,7 +13,7 @@ class Attribute:
         self.type = typex
 
     def __str__(self):
-        return f'[attrib] {self.name} : {self.type.name};'
+        return f'[attrib] {self.name} : {self.type};'
 
     def __repr__(self):
         return str(self)
@@ -26,8 +26,8 @@ class Method:
         self.return_type = return_type
 
     def __str__(self):
-        params = ', '.join(f'{n}:{t.name}' for n,t in zip(self.param_names, self.param_types))
-        return f'[method] {self.name}({params}): {self.return_type.name};'
+        params = ', '.join(f'{n}:{str(t)}' for n,t in zip(self.param_names, self.param_types))
+        return f'[method] {self.name}({params}): {self.return_type};'
 
     def __eq__(self, other):
         return other.name == self.name and \
@@ -40,6 +40,23 @@ class Type:
         self.attributes = []
         self.methods = []
         self.parent = None
+        self.parameters = []
+
+    def get_params(self,param_name):
+        try:
+            return next(param for param in self.parameters if param.name == param_name)
+        except StopIteration:
+            raise SemanticError(f'Parameter "{param_name}" is not defined in {self.name}.')
+
+    def define_param(self, name:str, type):
+        try:
+            self.get_params(name)
+        except SemanticError:
+            param = VariableInfo(name, type)
+            self.parameters.append(param)
+            return param
+        else:
+            raise SemanticError(f'Parameter "{name}" is already defined in {self.name}.')
 
     def set_parent(self, parent):
         if self.parent is not None:
@@ -98,8 +115,21 @@ class Type:
             plain[method.name] = (method, self)
         return plain.values() if clean else plain
 
+    def __eq__(self, value: object):
+        return self.name==value.name
+    
     def conforms_to(self, other):
-        return other.bypass() or self == other or self.parent is not None and self.parent.conforms_to(other)
+        if other.name=='Object':
+            return True
+        if other==self and self.name=='Object':
+            return True
+        
+        return self == other or self.parent is not None and self.parent.conforms_to(other)
+      
+
+
+
+
 
     def bypass(self):
         return False
@@ -108,6 +138,8 @@ class Type:
         output = f'type {self.name}'
         parent = '' if self.parent is None else f' : {self.parent.name}'
         output += parent
+        params = ', '.join(f'{x.name}:{x.type}' for x in self.parameters)
+        output += f'({params})' if self.parameters else ''
         output += ' {'
         output += '\n\t' if self.attributes or self.methods else ''
         output += '\n\t'.join(str(x) for x in self.attributes)
@@ -158,7 +190,7 @@ class Context:
         self.types = {}
 
     def create_type(self, name:str):
-        if name in self.types:
+        if name in self.types.keys():
             raise SemanticError(f'Type with the same name ({name}) already in context.')
         typex = self.types[name] = Type(name)
         return typex
@@ -186,6 +218,7 @@ class Scope:
         self.parent = parent
         self.children = []
         self.index = 0 if parent is None else len(parent)
+        self.current_type=None
 
     def __len__(self):
         return len(self.locals)

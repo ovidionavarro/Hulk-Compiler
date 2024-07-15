@@ -1,0 +1,13 @@
+function trr1(x:String,m:Object):Boolean  =>true==(true | true);
+function trr(x:String,m)=>3==4&!true;
+function trr2(x:String,y):String  =>2@@2;
+trr2(trr("2",3),"2");
+print(22);
+let a = 42 in print(a);
+let a = 42 in let mod =3 in
+    print(
+        if (mod == 0) "Magic"
+        elif (2==3) "Woke"
+        elif (2==1) "dasd"
+        else "Dumb"
+    );

@@ -1,0 +1,29 @@
+type Person (firstname: String, lastname: String) {
+    firstname: String = firstname;
+    lastname: String = lastname;
+
+    
+}
+function cot(angle:Number): Number => 1 / tan(angle);
+function trr(x) =>x|x;
+trr(true);
+let a = 0 in {
+    print(a);
+    a := 6;
+    print(a);
+}
+type Point {
+    x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x;
+    setY(y) => self.y := y;
+}
+let a= new Person("3","4") in print(a);
+let a = 10 in while (a >= 0) {
+    print(a);
+    a := a - 1;
+}
