@@ -1,0 +1,24 @@
+type A {
+
+}
+
+type B inherits A {
+
+}
+
+type C inherits A {
+
+}
+
+let x : A = if (rand() < 0.5) new B() else new C() in{
+    print(x);
+    if (x is B){
+        print("x is B");
+        let y : B = x as A in {
+            print(y);
+     };
+     }
+    else {
+        print("No");
+    };
+    }

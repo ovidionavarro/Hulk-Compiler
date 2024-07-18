@@ -1,13 +1,46 @@
-print("Hello World");
-print("The meaning of life is " @ 42);
-print(sin(2 * PI) ^ 2 + cos(3 * PI / log(4, 64)));
+function sum(numbers: Number): Number =>
+    let total = 0 in {
+        print("hi");
+        for (x in numbers){
+            total := total + x;
+       };
+     total;
+    };
+let numbers = [1,2,3,4,5] in
+    print(sum(numbers));
 
-{
-    print(42);
-    print(sin(PI/2));
-    print("Hello World");
+
+
+function mean(numbers: Number): Number =>
+    let total = 0 in {
+        for (x in numbers)
+            total := total + x;
+
+        total / size(numbers);
+    };
+
+let numbers = [1,2,3,4,5] in
+    print(mean(numbers));
+
+
+function fib(n) => if (n == 0 | n == 1) 1 else fib(n-1) + fib(n-2);
+print(fib(5));
+
+
+let a = 10 in while (a > 0) {
+    print(a);
+    a := a - 1;
 }
 
-function tan_(x) => sin(x) / cos(x);
-print(tan_(PI/2));
 
+function gcd(a, b) =>
+    while (a > 0 )
+        let m = a % b in {
+            b := a;
+            a := m;
+            print("a: " @@ a);
+        };
+print( "gcd" @@ gcd(8,6));
+let a = 42 in if (a % 2 == 0) print("Even") else print("odd");
+
+let x =

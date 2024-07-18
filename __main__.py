@@ -52,7 +52,7 @@ if __name__ == "__main__":
     #
     # # Obtiene el nombre del archivo del primer argumento
     # filename = sys.argv[1]
-    filename = 'test8.hulk'
+    filename = 'test9.hulk'
     try:
         lexer = Lexer(symbol_table, G.EOF)
         parser = LR1Parser(G, verbose=False)
@@ -102,8 +102,8 @@ if __name__ == "__main__":
             # tree=builder.tree_type()
             # builder.print_tree(tree)
             # Checker
-            checker = TypeChecker(context, errors)
-            scope = checker.visit(ast)
+            # checker = TypeChecker(context, errors)
+            # scope = checker.visit(ast)
             print('Errors', errors)
             if errors:
                 exit(1)

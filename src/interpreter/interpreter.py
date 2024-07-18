@@ -36,8 +36,9 @@ class Scope:
         self.set_variable('log', math.log)
         self.set_variable('sqrt', math.sqrt)
         self.set_variable('exp', math.sin)
-        self.set_variable('rand', random.randint(0, 1))
+        self.set_variable('rand', random.random)
         self.set_variable('PI', math.pi)
+        self.set_variable('size', len)
 
 
 class InterpreterVisitor:
@@ -139,10 +140,9 @@ class InterpreterVisitor:
 
     @visitor.when(LetNode)
     def visit(self, node, scope):
-        local_scope = Scope(scope)
         for var, val in zip(node.vars, node.values):
-            local_scope.set_variable(var.name, self.visit(val, local_scope))
-        return self.visit(node.expression, local_scope)
+            scope.set_variable(var.name, self.visit(val, scope))
+        return self.visit(node.expression, scope)
 
     @visitor.when(IfElseExpression)
     def visit(self, node, scope):
@@ -181,9 +181,8 @@ class InterpreterVisitor:
     def visit(self, node, scope):
         collection = self.visit(node.collection, scope)
         for item in collection:
-            local_scope = Scope(scope)
-            local_scope.set_variable(node.name, item)
-            self.visit(node.expression, local_scope)
+            scope.set_variable(node.name, item)
+            self.visit(node.expression, scope)
 
     @visitor.when(NewNode)
     def visit(self, node, scope):
@@ -244,20 +243,30 @@ class InterpreterVisitor:
 
     @visitor.when(ImplicitListNode)
     def visit(self, node, scope):
-        iterator = self.visit(node.iterator, scope)
-        collection = self.visit(node.collection, scope)
-        return [self.visit(iterator, Scope(scope, {iterator.name: item})) for item in collection]
+        # iterator = self.visit(node.iterator, scope)
+        # collection = self.visit(node.collection, scope)
+        # return [self.visit(iterator, Scope(scope, {iterator.name: item})) for item in collection]
+        raise "NOT IMPLEMENTED"
 
     @visitor.when(IndexingNode)
     def visit(self, node, scope):
         collection = self.visit(node.collection, scope)
         index = self.visit(node.index, scope)
+        index = int(index)
         return collection[index]
 
     @visitor.when(AsNode)
     def visit(self, node, scope):
         expr = self.visit(node.expression, scope)
-        return expr if isinstance(expr, node.type) else None
+        if node.type in self.global_scope.variables:
+            target_type = self.global_scope.variables[node.type]
+        else:
+            raise TypeError(f"Unknown target type: {node.type}")
+
+        if isinstance(expr, target_type):
+            return expr
+        else:
+            raise TypeError(f"Cannot cast {type(expr).__name__} to {node.type}")
 
     @visitor.when(OrAndExpression)
     def visit(self, node, scope):
@@ -309,6 +318,8 @@ class InterpreterVisitor:
             return left / right
         if operator == '^':
             return left ** right
+        if operator == '%':
+            return left % right
 
     @visitor.when(StringConcatenationNode)
     def visit(self, node, scope):
