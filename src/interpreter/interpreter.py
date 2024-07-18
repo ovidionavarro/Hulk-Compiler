@@ -4,11 +4,11 @@ from src.semantic_checker.ast import *
 import math
 
 
-def base_method(self_obj, method_name, *args):
+def base_method(self_obj, method_name):
     base_class = type(self_obj).__bases__[0]
-    print(base_class)
+    print(method_name)
     func = getattr(base_class, method_name)
-    return func(self_obj, *args)
+    return func
 
 
 class Scope:
@@ -128,6 +128,11 @@ class InterpreterVisitor:
         cls = type(node.name, bases, {})
 
         cls.__init__ = init
+
+        for method in node.corpus:
+            if isinstance(method, FunctionNode):
+                setattr(cls, method.name, method)
+
         scope.set_variable(node.name, cls)
         return cls
 
@@ -160,7 +165,10 @@ class InterpreterVisitor:
 
     @visitor.when(SelfVaraiableNode)
     def visit(self, node, scope):
-        return scope.get_variable(f'self.{node.name}')
+        if scope.get_variable('self'):
+            return scope.get_variable('self').__getattribute__(node.name)
+        else:
+            return scope.get_variable(f'self.{node.name}')
 
     @visitor.when(SelfDesctructiveExpression)
     def visit(self, node, scope):
@@ -217,13 +225,7 @@ class InterpreterVisitor:
                 if callable(scope.parent.get_variable(m)):
                     func_name = m
             args = [self.visit(arg, scope) for arg in node.arguments]
-            base_class = super(self_obj.__class__, self_obj)
-            if hasattr(base_class, func_name):
-                func = getattr(base_class, func_name)
-                result = func(*args)
-                return result
-            else:
-                raise Exception(f"function {func_name} not found in {base_class}")
+            return self.visit(base_method(self_obj, func_name), scope)(*args)
 
         else:
             func = scope.get_variable(node.funct)

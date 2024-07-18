@@ -42,5 +42,3 @@ function gcd(a, b) =>
         };
 print( "gcd" @@ gcd(8,6));
 let a = 42 in if (a % 2 == 0) print("Even") else print("odd");
-
-let x =
