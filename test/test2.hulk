@@ -27,15 +27,19 @@ type Person(firstname, lastname) {
     firstname = firstname;
     lastname = lastname;
 
-    name() => self.firstname @@ self.lastname;
+    name(x) => self.firstname @@ self.lastname @@ x;
 }
 type Knight inherits Person {
     test() => "Test";
+    name(x) => base(x) @@ x;
+
 }
+
+print(e);
 let k = new Knight("K" , "T") in
-    print(k.name());
+    print(k.name("a"));
 let p = new Person("Phil", "Collins") in
-    print(p.name());
+    print(p.name("aa"));
 
 
 

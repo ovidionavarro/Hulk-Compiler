@@ -52,7 +52,7 @@ if __name__ == "__main__":
     #
     # # Obtiene el nombre del archivo del primer argumento
     # filename = sys.argv[1]
-    filename = 'test9.hulk'
+    filename = 'test2.hulk'
     try:
         lexer = Lexer(symbol_table, G.EOF)
         parser = LR1Parser(G, verbose=False)

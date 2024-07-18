@@ -35,10 +35,11 @@ class Scope:
         self.set_variable('tan', math.tan)
         self.set_variable('log', math.log)
         self.set_variable('sqrt', math.sqrt)
-        self.set_variable('exp', math.sin)
+        self.set_variable('exp', math.exp)
         self.set_variable('rand', random.random)
         self.set_variable('PI', math.pi)
         self.set_variable('size', len)
+        self.set_variable('e', math.e)
 
 
 class InterpreterVisitor:
@@ -149,8 +150,7 @@ class InterpreterVisitor:
         for condition, case in zip(node.condition, node.cases):
             if self.visit(condition, scope):
                 return self.visit(case, scope)
-        n_cases = len(node.cases)
-        return self.visit(node.cases[n_cases - 1], scope)
+        return self.visit(node.cases[-1], scope)
 
     @visitor.when(DesctructiveExpression)
     def visit(self, node, scope):
