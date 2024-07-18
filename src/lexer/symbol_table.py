@@ -20,7 +20,7 @@ symbol_table=[
     (while_, "while"),
     (function, "function"),
     # (print_, "print"),
-    (pi, "pi"),
+    (pi, "PI"),
     (e, "e"),
     (new, "new"),
     (inherits, "inherits"),
