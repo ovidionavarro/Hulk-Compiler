@@ -9,6 +9,7 @@ from src.cmp.evaluation import evaluate_reverse_parse
 from src.semantic_checker.visitor_print import *
 from src.semantic_checker.type_collector import *
 from src.semantic_checker.checker import TypeChecker
+from src.interpreter.interpreter import Interpreter_Visitor
 import dill
 
 
@@ -103,6 +104,10 @@ if __name__ == "__main__":
             checker=TypeChecker(context,errors)
             scope=checker.visit(ast)
             print('Errors',errors)
+            if len(errors)==0:
+                print('El programa es correcto')
+                inter=Interpreter_Visitor()
+                print(inter.visit(ast))
             
     except FileNotFoundError:
         print(f"Error: El archivo '{filename}' no fue encontrado.")

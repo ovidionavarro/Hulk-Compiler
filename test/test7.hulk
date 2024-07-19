@@ -1,29 +1,5 @@
-type Point {
-    x = 0;
-    y = 0;
 
-    getX() => self.x;
-    getY() => self.y;
-
-    setX(x) => self.x := x;
-    setY(y) => self.y := y;
-}
-
-let pt = new Point() in
-    print("x: " @ pt.getX() @ "; y: " @ pt.getY());
-
-
-type Person(firstname, lastname) {
-    firstname = firstname;
-    lastname = lastname;
-
-    name() => self.firstname @@ self.lastname;
-}
-type Knight inherits Person {
-    name() => "Sir" @@ "sd";
-}
-
-let p = new Person("Phil", "Collins") in
-    print(p.name());
-
-
+let numbers = [1,2,3,4,5,6,7,8,9],a=4 in
+        for (x in a)
+            print(x);
+    let numbers = [1,2,3,4,5,6,7,8,9] in print(numbers[true]);

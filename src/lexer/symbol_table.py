@@ -3,7 +3,7 @@ from src.grammar.grammar import  *
 
 regular_chars = ("abcdefghijklmnopqrstuvwxyzABCD"
                  "EFGHIJKLMNOPQRSTUVWXYZ#$%&@^_"
-                 "<>=,:;-+/0123456789{}")
+                 "<>=,:;-+/012345678!9'{}")
 join_reg_chars='|'.join(str(n) for n in regular_chars)
 # +'|' + '\\('+ '|' +'\\)' + '|'+'\\*'+'|'+ '\\|'
 nonzero_digits = '|'.join(str(n) for n in range(1,10))

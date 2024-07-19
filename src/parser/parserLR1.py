@@ -110,7 +110,7 @@ class ShiftReduceParser:
 
     def __init__(self, G, verbose=False):
         self.G = G
-        self.verbose = verbose
+        self.verbose = False
         self.action = {}
         self.goto = {}
         self._build_parsing_table()

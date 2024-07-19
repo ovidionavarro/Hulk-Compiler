@@ -68,7 +68,7 @@ class TypeChecker:
                 self.errors.append(ex.text)
         else:
             self.errors.append(f'Current {scope.current_type} type not exist')
-
+    
     @visitor.when(SelfDesctructiveExpression)
     def visit(self,node:SelfDesctructiveExpression,scope):
         try:
@@ -101,6 +101,10 @@ class TypeChecker:
         except SemanticError as ex:
             self.errors.append(ex.text)
             node.var.type_value=self.context.get_type('<error>')
+
+    @visitor.when(ListNode)
+    def visit(self,node:ListNode,scope):
+        node.type_value=self.context.get_type('iterable')
 
     @visitor.when(FunctionNode)
     def visit(self,node:FunctionNode,scope):
@@ -279,9 +283,13 @@ class TypeChecker:
         node.type_value=node.expression.type_value
     @visitor.when(ForNode)
     def visit(self,node:ForNode,scope):
+        scope.define_variable(node.name,self.context.get_type('Object'))
+        self.visit(node.collection,scope)
         ##la coolection tiene k ser tipo iterable
         ##meter el name en el scope con el tipo de valor del collection
-        self.visit(node.collection,scope)
+
+        if (node.collection.type_value!=self.context.get_type('iterable')):
+            self.errors.append(INCOMPATIBLE_TYPES% (node.collection.type_value,' iterable'))
         self.visit(node.expression,scope)
         node.type_value=node.expression.type_value
 
@@ -303,6 +311,17 @@ class TypeChecker:
             node.type_value=self.context.get_type("<error>")
         
         
+    @visitor.when(IndexingNode)
+    def visit(self,node:IndexingNode,scope):
+        self.visit(node.collection,scope)
+        self.visit(node.index,scope)
+        #index
+        if(node.index.type_value!=NumType()):
+            self.errors.append(INCOMPATIBLE_TYPES % (node.index.type_value,NumType()))
+        #collection
+        if(node.collection.type_value!=self.context.get_type('iterable')):
+            self.errors.append(INCOMPATIBLE_TYPES % (node.collection.type_value,'iterable'))
+        node.type_value=self.context.get_type('Object')
 
 #===========Operations================#
     @visitor.when(DesctructiveExpression)
