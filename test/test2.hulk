@@ -1,7 +1,47 @@
-type Point(x,y)  {
+type Point {
     x = 0;
+    y = 0;
+
+    getX() => self.x;
+    getY() => self.y;
+
+    setX(x) => self.x := x ;
+    setY(y) => self.y := y;
 }
 
+let pt = new Point() in {
+    let newX = 2 in {
+        print(newX);
+        let newX = 4 in {
+        pt.setX(4);
+        print("x: " @ pt.getX() @ "; y: " @ pt.getY() @@ newX);
+        newX:=44;
+        print(newX);
+        }
+    }
+}
+
+
+
+type Person(firstname, lastname) {
+    firstname = firstname;
+    lastname = lastname;
+
+    name(x) => self.firstname @@ self.lastname @@ x;
+}
+type Knight inherits Person {
+    test() => self.firstname;
+    name(x) => base(x) @@ "Knight";
+
+}
+
+
+let k = new Knight("K" , "T") in {
+    print(k.test())
+    print(k.name("Knight"));
+    }
+let p = new Person("Phil", "Collins") in
+    print(p.name("Person"));
 
 
 
